@@ -128,6 +128,18 @@
       taskW4MissileTitle: 'Wk 4 · Park 5 tiles from your Alliance Furnace',
       taskW4MissileBody: 'Warlord Missile blast radius is 25×25 tiles and creates Contaminated Land (no shields) for 1 hour. Reposition your own base at least 5 tiles from the Alliance Furnace before Wk4.',
 
+      // ---- Wk 5-8 in-season tasks (KB: [[06-season-2-frozen]] end-game phase) ----
+      taskW5SoilRoundTitle: 'Wk 5 · Rare Soil War round (twice-weekly ongoing)',
+      taskW5SoilRoundBody: 'Rare Soil War rounds run Wed + Sat through end of season. Alliance Furnace + all personal furnaces on overdrive during war windows. Coordinate defense rotation among R4s.',
+      taskW5GroupingTPTitle: 'Wk 5 · Coordinate cross-server Grouping Teleport',
+      taskW5GroupingTPBody: 'Free Grouping Teleport (available from Wk 3) is the vehicle for cross-server attacks + retreats. R5 decides which server hops are worth the 5-min cooldown; announce in Discord Wed morning before the war round.',
+      taskW6GlacieradonTitle: 'Wk 6 · Glacieradon boss tracker',
+      taskW6GlacieradonBody: 'Four Glacieradon spawn and march toward the Nuclear Furnace at map center. They can be attacked only when passing through cities — daily attempt limits. Assign one R4 to publish daily boss-position updates.',
+      taskW7SiegePrepTitle: 'Wk 7 · Nuclear Furnace siege prep',
+      taskW7SiegePrepBody: 'End-game reward flow around the Nuclear Furnace siege is a KB open question — mechanics not fully documented. Prep: pool coordinated rally speedups, refill hospitals, healing supply on standby.',
+      taskW8NuclearSiegeTitle: 'Wk 8 · Nuclear Furnace / Capitol siege push',
+      taskW8NuclearSiegeBody: 'Final boss cycle. All hands: Glacieradon burn-down, Capitol contest, final Rare Soil deposit. KB gap: exact reward-flow mechanics unpublished — verify in-game and share to alliance chat.',
+
       // ---- Roster / grid ----
       rosterHeading: 'Roster · alliance-wide status',
       rosterImportCsv: 'Import roster CSV',
@@ -244,6 +256,17 @@
       taskW3FactionBody: '워존이 반군 vs 헌병대로 나뉘어 투표. 8 워존이 4대4로 분할. 시즌 나머지 기간 상대가 결정됩니다.',
       taskW4RareSoilTitle: '4주차 · 희토 전쟁 준비',
       taskW4RareSoilBody: '-70 °C 눈보라와 희토 전쟁이 동시 진행. 동맹 화로 + 모든 개인 화로가 수요일/토요일 전쟁 창구용 과부하 석탄을 확보해야 합니다.',
+      // ---- Wk 5-8 in-season tasks (KR) ----
+      taskW5SoilRoundTitle: '5주차 · 희토 전쟁 라운드 (매주 2회 지속)',
+      taskW5SoilRoundBody: '희토 전쟁이 시즌 종료까지 매주 수/토 진행됩니다. 동맹 화로 + 모든 개인 화로 과부하 유지. R4들 간 방어 로테이션 조율.',
+      taskW5GroupingTPTitle: '5주차 · 크로스 서버 그룹 텔레포트 조율',
+      taskW5GroupingTPBody: '3주차부터 사용 가능한 무료 그룹 텔레포트는 크로스 서버 공격/후퇴의 핵심입니다. 5분 재사용 대기시간을 감안하여 R5가 어떤 서버로 갈지 결정, 수요일 아침 디스코드 공지.',
+      taskW6GlacieradonTitle: '6주차 · 글래시라돈 보스 추적',
+      taskW6GlacieradonBody: '4마리의 글래시라돈이 스폰되어 맵 중심 핵심 화로로 진군합니다. 도시 통과 시에만 공격 가능 — 일일 시도 횟수 제한. R4 한 명에게 일일 보스 위치 공지 담당 지정.',
+      taskW7SiegePrepTitle: '7주차 · 핵심 화로 공성전 준비',
+      taskW7SiegePrepBody: '핵심 화로 공성전 보상 흐름은 KB 미해결 질문 — 메커니즘 문서화 부족. 준비: 조율된 집결 가속 아이템 풀링, 병원 재충전, 치유 물자 대기.',
+      taskW8NuclearSiegeTitle: '8주차 · 핵심 화로 / 수도 공성전 최종 진격',
+      taskW8NuclearSiegeBody: '최종 보스 사이클. 총력전: 글래시라돈 처치, 수도 쟁탈, 최종 희토 예치. KB 공백: 정확한 보상 메커니즘 미공개 — 인게임 확인 후 연맹 채팅에 공유.',
       taskW4MissileTitle: '4주차 · 동맹 화로에서 5칸 이상 이격',
       taskW4MissileBody: '워로드 미사일 폭발 반경 25×25 타일, 오염 지대(1시간, 방어막 불가) 생성. 4주차 전에 자기 기지를 동맹 화로에서 최소 5칸 이상 옮기세요.',
 
