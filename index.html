@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>LWS Season Timeline · 시즌 타임라인</title>
+  <meta name="description" content="T-minus countdown to Season 2 launch + prep checklist for the whole alliance. Part of the Last War: Survival tool suite." />
+  <link rel="stylesheet" href="static/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="app-header">
+      <div class="brand" data-i18n="brand">R5TOOLS.IO</div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <span class="brand-sub" data-i18n="brandSub">LWS Suite</span>
+        <button class="lang-toggle" id="langToggle" data-i18n="langToggle">한국어</button>
+      </div>
+    </div>
+
+    <!-- Everything inside #main-app is what LWS_Access_Codes gates behind an unlock -->
+    <div id="main-app">
+
+      <h1 class="page-title" data-i18n="title">Season 2 Timeline · Polar Storm</h1>
+      <p class="page-subtitle" data-i18n="subtitle">T-minus countdown + prep checklist for the whole alliance.</p>
+
+      <!-- ---- Countdown ---- -->
+      <div class="panel countdown">
+        <div class="countdown-label" id="countdownLabel" data-i18n="countdownLabel">Until Season 2 launch</div>
+        <div class="countdown-value" id="countdownValue">— <span class="countdown-unit" data-i18n="countdownDay">d</span></div>
+      </div>
+
+      <!-- ---- Alliance setup ---- -->
+      <div class="panel">
+        <h2 data-i18n="configHeading">Alliance Setup</h2>
+
+        <div class="form-row">
+          <label for="cfgSeasonStart" data-i18n="configSeasonStart">Season 2 start (server time)</label>
+          <input type="datetime-local" id="cfgSeasonStart" />
+        </div>
+        <div class="hint" data-i18n="configSeasonStartHint">When does your warzone's Season 2 map transition happen? Community reports ~13:00 server time for many warzones — ask your R5 for the exact minute.</div>
+
+        <div class="form-row" style="margin-top:16px">
+          <label for="cfgAllianceName" data-i18n="configAllianceName">Alliance name</label>
+          <input type="text" id="cfgAllianceName" placeholder="e.g. HIVE" />
+        </div>
+        <div class="form-row">
+          <label for="cfgAllianceTag" data-i18n="configAllianceTag">Alliance tag</label>
+          <input type="text" id="cfgAllianceTag" placeholder="e.g. [HIV]" />
+        </div>
+        <div class="form-row">
+          <label for="cfgWarzone" data-i18n="configWarzone">Warzone (optional)</label>
+          <input type="number" id="cfgWarzone" placeholder="2007" />
+        </div>
+
+        <div class="form-actions">
+          <button class="primary" id="cfgSaveBtn" data-i18n="configSave">Save</button>
+          <span class="save-msg" id="cfgSaveMsg" data-i18n="configSaved">Saved.</span>
+        </div>
+      </div>
+
+      <!-- ---- Timeline / task list ---- -->
+      <div class="panel">
+        <h2 data-i18n="timelineHeading">Timeline</h2>
+
+        <div class="form-row" style="margin-bottom:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <label for="viewerSelect" data-i18n="viewerLabel" style="margin:0">Viewing tasks for:</label>
+          <select id="viewerSelect" style="min-width:200px;padding:6px 10px"></select>
+          <span class="hint" id="viewerSyncStatus" data-i18n="viewerSyncSaved" style="margin:0;font-size:12px;color:var(--text-mute)"></span>
+        </div>
+
+        <div class="legend">
+          <div class="leg-item"><span class="leg-dot economy"></span><span data-i18n="catEconomy">Economy</span></div>
+          <div class="leg-item"><span class="leg-dot military"></span><span data-i18n="catMilitary">Military</span></div>
+          <div class="leg-item"><span class="leg-dot spatial"></span><span data-i18n="catSpatial">Spatial / prep</span></div>
+          <div class="leg-item"><span class="leg-dot event"></span><span data-i18n="catEvent">Event day</span></div>
+        </div>
+
+        <table class="tl-table" id="tlTable">
+          <thead>
+            <tr>
+              <th data-i18n="timelineDayCol">Day</th>
+              <th data-i18n="timelineTaskCol">Task</th>
+              <th data-i18n="timelineCategoryCol">Category</th>
+              <th data-i18n="timelineDoneCol">Done</th>
+            </tr>
+          </thead>
+          <tbody id="tlBody">
+            <!-- rows rendered by app.js from TASKS[] -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ---- Roster + alliance-wide progress ---- -->
+      <div class="panel">
+        <h2 data-i18n="rosterHeading">Roster · alliance-wide status</h2>
+
+        <div class="form-actions" style="margin-bottom:12px">
+          <button id="rosterImportBtn" data-i18n="rosterImportCsv">Import roster CSV</button>
+          <input type="file" id="rosterFile" accept=".csv,text/csv" hidden />
+        </div>
+        <div class="hint" data-i18n="rosterImportHint">Same CSV format as the Hive Grid Manager (name, rank, hq_level, total_power, notes).</div>
+
+        <div id="rosterBody" style="margin-top:16px">
+          <div class="roster-empty" data-i18n="rosterEmpty">No roster loaded yet. Import a CSV to see per-member task status.</div>
+        </div>
+      </div>
+
+      <!-- ---- Export ---- -->
+      <div class="panel">
+        <h2 data-i18n="exportHeading">Export</h2>
+        <div class="export-row">
+          <button id="exportPngBtn" data-i18n="exportPng">PNG (Discord)</button>
+          <button id="exportIcalBtn" data-i18n="exportIcal">iCal (.ics)</button>
+          <button id="exportCsvBtn" data-i18n="exportCsv">CSV</button>
+          <button id="exportJsonBtn" data-i18n="exportJson">JSON</button>
+        </div>
+        <div class="hint" data-i18n="exportHint">PNG snapshot for your Discord announce channel; iCal for personal calendars; CSV/JSON for other LWS tools.</div>
+      </div>
+
+    </div><!-- /#main-app -->
+
+    <footer class="app-footer">
+      <a href="https://r5tools.io" target="_blank" data-i18n="footerHome">r5tools.io</a>
+      · <span data-i18n="footerCred">Powered by the LWS Knowledge Base</span>
+    </footer>
+  </div>
+
+  <!-- ---- LWS Access Codes gate (real, not stubbed) ---- -->
+  <script>
+    // Fallback: for local dev without an access-codes service, comment this line out.
+    // Production: point at the deployed access-codes subdomain.
+    // window.LWS_ACCESS_CODES_BASE_URL = 'https://access-codes.r5tools.io';
+  </script>
+  <script src="https://access-codes.r5tools.io/lib.js" onerror="console.warn('[LWS] access-codes lib unreachable — running in ungated dev mode')"></script>
+  <script>
+    if (window.LWSAccessCodes && typeof window.LWSAccessCodes.gate === 'function') {
+      window.LWSAccessCodes.gate('main-app');
+    }
+  </script>
+
+  <!-- ---- i18n ---- -->
+  <script src="static/i18n.js"></script>
+
+  <!-- ---- app ---- -->
+  <script>
+  (function () {
+    'use strict';
+
+    // ============================================================
+    // Timeline task definitions.
+    // Every task cites the KB article that justifies it.
+    // Categories: economy | military | spatial | event
+    // day_offset: negative = pre-season (T-minus), 1 = launch day, > 1 = Day N
+    //             {week, weekday} = in-season, weekday 1=Mon..7=Sun
+    // ============================================================
+    var TASKS = [
+      // ---- Pre-season (T-minus) ----
+      // KB: [[10-economy]] speedup save-up strategy — double-score during Arms Race overlap
+      { id: 'save-speedups',     day_offset: -12, category: 'economy',  min_hq: 0,
+        title_key: 'taskSaveSpeedupsTitle',   body_key: 'taskSaveSpeedupsBody' },
+      // KB: [[06-season-2-frozen]] HQ 30 unlocks High-Heat Furnace
+      { id: 'finish-hq',         day_offset: -10, category: 'economy',  min_hq: 0,
+        title_key: 'taskFinishHqTitle',       body_key: 'taskFinishHqBody' },
+      // KB: [[10-economy]] warehouses protect at/below threshold; opened chests land in exposed pool
+      { id: 'stop-boxes',        day_offset: -7,  category: 'economy',  min_hq: 0,
+        title_key: 'taskStopBoxesTitle',      body_key: 'taskStopBoxesBody' },
+      // KB: [[09-events]] Fri Total Mobilization × Arms Race Unit Progression = waterfall training
+      { id: 'train-troops',      day_offset: -5,  category: 'military', min_hq: 0,
+        title_key: 'taskTrainTroopsTitle',    body_key: 'taskTrainTroopsBody' },
+      // KB: [[06-season-2-frozen]] outer corners -15 °C safest; center -80 °C
+      { id: 'choose-coords',     day_offset: -3,  category: 'spatial',  min_hq: 0,
+        title_key: 'taskChooseCoordsTitle',   body_key: 'taskChooseCoordsBody' },
+      // KB: [[06-season-2-frozen]] Day-1 priority list — stack radar tasks for guaranteed coal
+      { id: 'stack-radar',       day_offset: -1,  category: 'economy',  min_hq: 0,
+        title_key: 'taskStackRadarTitle',     body_key: 'taskStackRadarBody' },
+      // KB: [[06-season-2-frozen]] Alliance Furnace needs ~20 reinforcements to activate
+      { id: 'wake-roster',       day_offset: -1,  category: 'spatial',  min_hq: 0,
+        title_key: 'taskAllianceHelpTitle',   body_key: 'taskAllianceHelpBody' },
+
+      // ---- Day 1 (season launch) ----
+      // KB: [[06-season-2-frozen]] free Assembly Point relocation trick
+      { id: 'd1-relocate',       day_offset: 1,   category: 'spatial',  min_hq: 0,
+        title_key: 'taskD1RelocateTitle',     body_key: 'taskD1RelocateBody' },
+      // KB: [[06-season-2-frozen]] R4/R5 place Alliance Furnace on L1 territory, 20 reinforcements
+      { id: 'd1-place-af',       day_offset: 1,   category: 'spatial',  min_hq: 0,
+        title_key: 'taskD1PlaceAFTitle',      body_key: 'taskD1PlaceAFBody' },
+      // KB: [[06-season-2-frozen]] High-Heat Furnace requires HQ 30
+      { id: 'd1-high-heat',      day_offset: 1,   category: 'military', min_hq: 30,
+        title_key: 'taskD1HighHeatTitle',     body_key: 'taskD1HighHeatBody' },
+      // KB: [[06-season-2-frozen]] Titanium Alloy Factory unlocks Factory 2 at L15
+      { id: 'd1-titanium',       day_offset: 1,   category: 'economy',  min_hq: 25,
+        title_key: 'taskD1TitaniumTitle',     body_key: 'taskD1TitaniumBody' },
+      // KB: [[06-season-2-frozen]] auto-activate-in-blizzard toggle recommended Day 1
+      { id: 'd1-blizzard-toggle',day_offset: 1,   category: 'military', min_hq: 30,
+        title_key: 'taskD1BlizzardToggleTitle', body_key: 'taskD1BlizzardToggleBody' },
+      // KB: [[06-season-2-frozen]] Wanderer coal reward pays out post-map-transition only; L180 ≈ 200k coal
+      { id: 'd1-wanderer',       day_offset: 1,   category: 'event',    min_hq: 0,
+        title_key: 'taskD1WandererTitle',     body_key: 'taskD1WandererBody' },
+
+      // ---- In-season (Week N.weekday) ----
+      // KB: [[06-season-2-frozen]] L1 city (Village) unlock: W1 day 3+12h
+      { id: 'w1-city-unlock',    week: 1, weekday: 3, category: 'event',   min_hq: 0,
+        title_key: 'taskW1CityTitle',         body_key: 'taskW1CityBody' },
+      // KB: [[06-season-2-frozen]] Wk3 Faction Awards event — Rebels vs Gendarmerie vote
+      { id: 'w3-faction',        week: 3, weekday: 1, category: 'event',   min_hq: 0,
+        title_key: 'taskW3FactionTitle',      body_key: 'taskW3FactionBody' },
+      // KB: [[06-season-2-frozen]] Wk4 -70 °C blizzard runs concurrently with Rare Soil War
+      { id: 'w4-rare-soil-prep', week: 4, weekday: 1, category: 'event',   min_hq: 0,
+        title_key: 'taskW4RareSoilTitle',     body_key: 'taskW4RareSoilBody' },
+      // KB: [[06-season-2-frozen]] Warlord Missile 25×25 tiles; park 5 tiles from own furnace
+      { id: 'w4-missile-move',   week: 4, weekday: 1, category: 'spatial', min_hq: 0,
+        title_key: 'taskW4MissileTitle',      body_key: 'taskW4MissileBody' },
+    ];
+
+    // ============================================================
+    // State (v0.3: per-member task persistence)
+    // ============================================================
+    // state.allTasks is { memberName: { taskId: bool } }.
+    // state.currentMember is the roster row whose task list is currently being edited.
+    // state.tasks is kept as a live reference to state.allTasks[currentMember] so
+    // downstream render code that reads state.tasks[t.id] still works unchanged.
+    var state = {
+      config: null,
+      allTasks: {},        // { memberName: { taskId: bool } } — per-member ticks
+      currentMember: null, // string — the roster member currently being edited
+      get tasks() {        // legacy accessor for existing render code
+        if (!this.currentMember) return {};
+        this.allTasks[this.currentMember] = this.allTasks[this.currentMember] || {};
+        return this.allTasks[this.currentMember];
+      },
+      roster: [],
+    };
+
+    // localStorage backup — used on network failure or in static-only deploys
+    var STORAGE_KEY = 'lws.season-timeline.tasks.v1';
+    function loadFromStorage() {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch (e) { return {}; }
+    }
+    function saveToStorage(allTasks) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(allTasks)); } catch (e) {}
+    }
+
+    // Server sync — best-effort; falls back to localStorage-only on failure
+    function loadAllTasksFromServer() {
+      return fetch('/api/tasks')
+        .then(function (r) { return r.json(); })
+        .then(function (data) { return data && data.task_state ? data.task_state : {}; })
+        .catch(function () { return null; });   // null = fall back to localStorage
+    }
+    function saveTaskToServer(member, taskId, done) {
+      var syncEl = document.getElementById('viewerSyncStatus');
+      if (syncEl) { syncEl.textContent = window.I18N.t('viewerSyncSyncing'); }
+      return fetch('/api/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ member: member, task_id: taskId, done: done }),
+      })
+        .then(function (r) { return r.json(); })
+        .then(function () {
+          if (syncEl) { syncEl.textContent = window.I18N.t('viewerSyncSaved'); }
+        })
+        .catch(function () {
+          if (syncEl) { syncEl.textContent = window.I18N.t('viewerSyncLocal'); }
+        });
+    }
+
+    // ============================================================
+    // Member selector
+    // ============================================================
+    function populateViewerSelect() {
+      var sel = document.getElementById('viewerSelect');
+      if (!sel) return;
+      var prev = state.currentMember;
+      sel.innerHTML = '';
+      state.roster.forEach(function (m) {
+        var opt = document.createElement('option');
+        opt.value = m.name;
+        opt.textContent = m.name + ' (' + m.rank + (m.hq_level ? ' · HQ' + m.hq_level : '') + ')';
+        sel.appendChild(opt);
+      });
+      // Preserve previous selection if still valid, else default to first member
+      var validPrev = prev && state.roster.some(function (m) { return m.name === prev; });
+      state.currentMember = validPrev ? prev : (state.roster[0] && state.roster[0].name) || null;
+      if (state.currentMember) sel.value = state.currentMember;
+    }
+
+    // Mock roster so the UI shows something before a real CSV upload
+    var MOCK_ROSTER = [
+      { name: 'Kayla',   rank: 'R5', hq_level: 30, total_power: 82000000, notes: '' },
+      { name: 'MinJi',   rank: 'R4', hq_level: 29, total_power: 61000000, notes: '' },
+      { name: 'Braz',    rank: 'R4', hq_level: 30, total_power: 74000000, notes: '' },
+      { name: 'Doug',    rank: 'R3', hq_level: 27, total_power: 45000000, notes: '' },
+      { name: 'Fiona',   rank: 'R3', hq_level: 25, total_power: 32000000, notes: '' },
+      { name: 'Newbie',  rank: 'R1', hq_level: 18, total_power: 8000000,  notes: '' },
+    ];
+
+    // ============================================================
+    // Countdown
+    // ============================================================
+    function computeCountdown() {
+      if (!state.config || !state.config.season_start_iso) return { preseason: true, days: null };
+      var start = new Date(state.config.season_start_iso).getTime();
+      var now = Date.now();
+      var diffMs = start - now;
+      if (diffMs > 0) {
+        var totalSec = Math.floor(diffMs / 1000);
+        return {
+          preseason: true,
+          days: Math.floor(totalSec / 86400),
+          hours: Math.floor((totalSec % 86400) / 3600),
+          mins: Math.floor((totalSec % 3600) / 60),
+          secs: totalSec % 60,
+        };
+      }
+      // In-season: report Day N (1-indexed)
+      var elapsedDays = Math.floor(-diffMs / 86400000) + 1;
+      return { preseason: false, tplusDay: elapsedDays };
+    }
+
+    function renderCountdown() {
+      var el = document.getElementById('countdownValue');
+      var labelEl = document.getElementById('countdownLabel');
+      var c = computeCountdown();
+      if (c.days === null) {
+        el.textContent = '—';
+        el.classList.remove('live');
+        labelEl.textContent = window.I18N.t('countdownPreseason');
+        return;
+      }
+      if (c.preseason) {
+        el.classList.remove('live');
+        labelEl.textContent = window.I18N.t('countdownLabel');
+        el.innerHTML =
+          c.days + '<span class="countdown-unit">' + window.I18N.t('countdownDay') + '</span>' +
+          String(c.hours).padStart(2, '0') + '<span class="countdown-unit">' + window.I18N.t('countdownHour') + '</span>' +
+          String(c.mins).padStart(2, '0') + '<span class="countdown-unit">' + window.I18N.t('countdownMin') + '</span>' +
+          String(c.secs).padStart(2, '0') + '<span class="countdown-unit">' + window.I18N.t('countdownSec') + '</span>';
+      } else {
+        el.classList.add('live');
+        labelEl.textContent = window.I18N.t('countdownLive');
+        el.innerHTML = window.I18N.t('countdownTPlus') + ' ' + c.tplusDay;
+      }
+    }
+
+    // ============================================================
+    // Task list
+    // ============================================================
+    function taskDayLabel(t) {
+      if (typeof t.day_offset === 'number') {
+        if (t.day_offset < 0) return 'T' + t.day_offset;    // e.g. T-12
+        if (t.day_offset === 1) return 'Day 1';
+        return 'Day ' + t.day_offset;
+      }
+      if (t.week) return 'Wk ' + t.week + '.' + t.weekday;
+      return '';
+    }
+
+    function taskDayClass(t) {
+      if (typeof t.day_offset === 'number' && t.day_offset < 1) return 'tl-day preseason';
+      return 'tl-day season';
+    }
+
+    function renderTaskTable() {
+      var tbody = document.getElementById('tlBody');
+      tbody.innerHTML = '';
+      TASKS.forEach(function (t) {
+        var tr = document.createElement('tr');
+
+        var tdDay = document.createElement('td');
+        tdDay.className = taskDayClass(t);
+        tdDay.textContent = taskDayLabel(t);
+        tr.appendChild(tdDay);
+
+        var tdTask = document.createElement('td');
+        var title = document.createElement('div');
+        title.className = 'tl-task-title';
+        title.textContent = window.I18N.t(t.title_key);
+        var body = document.createElement('div');
+        body.className = 'tl-task-body';
+        body.textContent = window.I18N.t(t.body_key);
+        tdTask.appendChild(title);
+        tdTask.appendChild(body);
+        tr.appendChild(tdTask);
+
+        var tdCat = document.createElement('td');
+        var dot = document.createElement('span');
+        dot.className = 'tl-cat-dot ' + t.category;
+        var label = document.createElement('span');
+        label.className = 'tl-cat-label';
+        label.textContent = window.I18N.t('cat' + t.category.charAt(0).toUpperCase() + t.category.slice(1));
+        tdCat.appendChild(dot);
+        tdCat.appendChild(label);
+        tr.appendChild(tdCat);
+
+        var tdDone = document.createElement('td');
+        var chk = document.createElement('input');
+        chk.type = 'checkbox';
+        chk.checked = !!state.tasks[t.id];
+        // v0.3: per-member persistence — server first, localStorage always
+        chk.addEventListener('change', function () {
+          if (!state.currentMember) {
+            alert(window.I18N.t('viewerNoMember'));
+            chk.checked = !chk.checked;
+            return;
+          }
+          state.tasks[t.id] = chk.checked;
+          saveToStorage(state.allTasks);
+          saveTaskToServer(state.currentMember, t.id, chk.checked);
+          // Re-render roster progress bars in-place (aggregate view)
+          renderRoster();
+        });
+        tdDone.appendChild(chk);
+        tr.appendChild(tdDone);
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    // ============================================================
+    // Roster
+    // ============================================================
+    function renderRoster() {
+      var el = document.getElementById('rosterBody');
+      if (!state.roster || state.roster.length === 0) {
+        el.innerHTML = '<div class="roster-empty">' + window.I18N.t('rosterEmpty') + '</div>';
+        return;
+      }
+      var html = '<table class="roster-table"><thead><tr>' +
+        '<th>' + window.I18N.t('rosterName')     + '</th>' +
+        '<th>' + window.I18N.t('rosterRank')     + '</th>' +
+        '<th>' + window.I18N.t('rosterHq')       + '</th>' +
+        '<th>' + window.I18N.t('rosterPower')    + '</th>' +
+        '<th>' + window.I18N.t('rosterProgress') + '</th>' +
+      '</tr></thead><tbody>';
+      state.roster.forEach(function (m) {
+        // v0.3: per-member progress — read from state.allTasks[m.name] (not viewer's local)
+        var memberTasks = state.allTasks[m.name] || {};
+        // Auto-suggest tasks: only show completion vs applicable tasks (min_hq filter)
+        var applicable = TASKS.filter(function (t) { return (m.hq_level || 0) >= (t.min_hq || 0); });
+        var done = applicable.filter(function (t) { return !!memberTasks[t.id]; }).length;
+        var pct = applicable.length ? Math.round((done / applicable.length) * 100) : 0;
+        html += '<tr>' +
+          '<td>' + escapeHtml(m.name || '') + '</td>' +
+          '<td><span class="rank-pill ' + (m.rank || '') + '">' + escapeHtml(m.rank || '') + '</span></td>' +
+          '<td>' + (m.hq_level || '') + '</td>' +
+          '<td>' + fmtPower(m.total_power) + '</td>' +
+          '<td><div class="progress-bar"><div class="fill" style="width:' + pct + '%"></div></div>' +
+            '<span style="font-size:10px;color:var(--text-mute);margin-left:6px">' + pct + '% · ' + done + '/' + applicable.length + '</span></td>' +
+        '</tr>';
+      });
+      html += '</tbody></table>';
+      el.innerHTML = html;
+    }
+
+    function fmtPower(n) {
+      if (!n) return '—';
+      if (n >= 1e9) return (n/1e9).toFixed(1) + 'B';
+      if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+      if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+      return String(n);
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+      });
+    }
+
+    // ---- CSV import (mirrors Alliance_Hive_Grid_Manager column set) ----
+    function parseRosterCsv(text) {
+      var lines = text.split(/\r?\n/).filter(function (l) { return l.trim(); });
+      if (lines.length === 0) return [];
+      var headers = lines[0].split(',').map(function (h) { return h.trim().toLowerCase(); });
+      var idx = {
+        name:        headers.indexOf('name'),
+        rank:        headers.indexOf('rank'),
+        hq_level:    headers.indexOf('hq_level'),
+        total_power: headers.indexOf('total_power'),
+        notes:       headers.indexOf('notes'),
+      };
+      return lines.slice(1).map(function (line) {
+        var cols = line.split(',');
+        return {
+          name:        idx.name        >= 0 ? (cols[idx.name] || '').trim()        : '',
+          rank:        idx.rank        >= 0 ? (cols[idx.rank] || '').trim()        : '',
+          hq_level:    idx.hq_level    >= 0 ? parseInt(cols[idx.hq_level], 10) || 0 : 0,
+          total_power: idx.total_power >= 0 ? parseInt(cols[idx.total_power], 10) || 0 : 0,
+          notes:       idx.notes       >= 0 ? (cols[idx.notes] || '').trim()       : '',
+        };
+      });
+    }
+
+    // ============================================================
+    // Config
+    // ============================================================
+    function loadConfigFromServer() {
+      return fetch('/api/config').then(function (r) { return r.json(); }).then(function (c) {
+        state.config = c;
+        if (c && c.season_start_iso) {
+          document.getElementById('cfgSeasonStart').value = c.season_start_iso.slice(0, 16);
+        }
+        if (c && c.alliance_name) document.getElementById('cfgAllianceName').value = c.alliance_name;
+        if (c && c.alliance_tag)  document.getElementById('cfgAllianceTag').value  = c.alliance_tag;
+        if (c && c.warzone)       document.getElementById('cfgWarzone').value      = c.warzone;
+      }).catch(function () { /* stay on defaults */ });
+    }
+
+    function saveConfig() {
+      var startVal = document.getElementById('cfgSeasonStart').value;
+      var payload = {
+        season_start_iso: startVal ? new Date(startVal).toISOString() : null,
+        alliance_name:    document.getElementById('cfgAllianceName').value || null,
+        alliance_tag:     document.getElementById('cfgAllianceTag').value || null,
+        warzone:          parseInt(document.getElementById('cfgWarzone').value, 10) || null,
+      };
+      return fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).then(function (r) { return r.json(); }).then(function () {
+        state.config = Object.assign({}, state.config || {}, payload);
+        var msg = document.getElementById('cfgSaveMsg');
+        msg.classList.add('on');
+        setTimeout(function () { msg.classList.remove('on'); }, 1500);
+        renderCountdown();
+      });
+    }
+
+    // ============================================================
+    // Exports
+    // ============================================================
+
+    // PNG: Discord-ready 1600×900 dark-theme snapshot.
+    // Layout: header (alliance + brand) · big countdown · timeline summary · roster progress bars · footer.
+    function exportPng() {
+      var W = 1600, H = 900;
+      var canvas = document.createElement('canvas');
+      canvas.width = W; canvas.height = H;
+      var ctx = canvas.getContext('2d');
+
+      // Palette — matches unlock.html + shared style guide
+      var C = {
+        bg:      '#0a0e1a',
+        panel:   '#0d1424',
+        panel2:  '#12192c',
+        border:  'rgba(255,255,255,0.10)',
+        accent:  '#c9a961',
+        text:    '#e6e8ee',
+        textDim: '#a8b0c0',
+        textMut: '#7a8290',
+        good:    '#8ae0a3',
+        cats: { economy: '#c9a961', military: '#e08a8a', spatial: '#7ac8e0', event: '#b98ae0' },
+      };
+
+      // Background
+      ctx.fillStyle = C.bg;
+      ctx.fillRect(0, 0, W, H);
+
+      // ---- Header ----
+      ctx.fillStyle = C.panel;
+      ctx.fillRect(0, 0, W, 80);
+      ctx.strokeStyle = C.border; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, 80); ctx.lineTo(W, 80); ctx.stroke();
+
+      ctx.fillStyle = C.accent;
+      ctx.font = '600 14px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('R5TOOLS.IO · ' + window.I18N.t('title').toUpperCase(), 40, 40);
+
+      var alliance = (state.config && state.config.alliance_name) || window.I18N.t('rosterEmpty').split('.')[0];
+      var tag = (state.config && state.config.alliance_tag) || '';
+      var wz = (state.config && state.config.warzone) ? ' · WZ' + state.config.warzone : '';
+      ctx.fillStyle = C.textDim;
+      ctx.font = '400 13px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText((tag ? tag + ' ' : '') + alliance + wz, W - 40, 40);
+      ctx.textAlign = 'left';
+
+      // ---- Countdown ----
+      var c = computeCountdown();
+      var countdownText = '—', countdownLabel = window.I18N.t('countdownPreseason');
+      if (c.days !== null) {
+        if (c.preseason) {
+          countdownText = c.days + 'd  ' + String(c.hours).padStart(2, '0') + 'h  ' +
+                          String(c.mins).padStart(2, '0') + 'm';
+          countdownLabel = window.I18N.t('countdownLabel');
+        } else {
+          countdownText = window.I18N.t('countdownTPlus') + ' ' + c.tplusDay;
+          countdownLabel = window.I18N.t('countdownLive');
+        }
+      }
+      ctx.fillStyle = C.textMut;
+      ctx.font = '400 16px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(countdownLabel, W / 2, 130);
+      ctx.fillStyle = c.preseason === false ? C.good : C.accent;
+      ctx.font = '600 72px ui-monospace, SFMono-Regular, Menlo, monospace';
+      ctx.fillText(countdownText, W / 2, 200);
+      ctx.textAlign = 'left';
+
+      // ---- Summary bar ----
+      var summY = 270;
+      ctx.fillStyle = C.panel2;
+      ctx.fillRect(40, summY, W - 80, 44);
+      ctx.strokeStyle = C.border; ctx.strokeRect(40, summY, W - 80, 44);
+      ctx.fillStyle = C.textDim;
+      ctx.font = '500 13px system-ui, sans-serif';
+      var doneCount = TASKS.filter(function (t) { return !!state.tasks[t.id]; }).length;
+      var summary =
+        TASKS.length + ' ' + window.I18N.t('timelineTaskCol').toLowerCase() +
+        '  ·  ' + doneCount + '/' + TASKS.length + ' ' + window.I18N.t('timelineDoneCol').toLowerCase() +
+        '  ·  ' + state.roster.length + ' ' + window.I18N.t('rosterName').toLowerCase();
+      ctx.fillText(summary, 56, summY + 22);
+
+      // ---- Two-column body ----
+      var bodyY = 340, bodyH = 480;
+      var colGap = 20;
+      var colW = (W - 80 - colGap) / 2;
+      var leftX = 40, rightX = leftX + colW + colGap;
+
+      // Timeline column
+      ctx.fillStyle = C.panel;
+      ctx.fillRect(leftX, bodyY, colW, bodyH);
+      ctx.strokeStyle = C.border; ctx.strokeRect(leftX, bodyY, colW, bodyH);
+      ctx.fillStyle = C.accent;
+      ctx.font = '600 14px system-ui, sans-serif';
+      ctx.fillText(window.I18N.t('timelineHeading').toUpperCase(), leftX + 20, bodyY + 28);
+
+      var rowY = bodyY + 60;
+      var rowH = 26;
+      var maxRows = Math.floor((bodyH - 80) / rowH);
+      var shownTasks = TASKS.slice(0, maxRows);
+      shownTasks.forEach(function (t, i) {
+        var y = rowY + i * rowH;
+        // Day badge
+        ctx.fillStyle = t.day_offset < 1 ? C.textMut : C.accent;
+        ctx.font = '600 11px ui-monospace, SFMono-Regular, Menlo, monospace';
+        ctx.fillText(taskDayLabel(t), leftX + 20, y);
+        // Category dot
+        ctx.fillStyle = C.cats[t.category] || C.textMut;
+        ctx.beginPath(); ctx.arc(leftX + 90, y - 3, 3.5, 0, Math.PI * 2); ctx.fill();
+        // Task title
+        var done = !!state.tasks[t.id];
+        ctx.fillStyle = done ? C.textMut : C.text;
+        ctx.font = (done ? '400 ' : '500 ') + '13px system-ui, sans-serif';
+        var title = window.I18N.t(t.title_key);
+        var maxTitleW = colW - 140;
+        title = truncateForWidth(ctx, title, maxTitleW);
+        ctx.fillText(title, leftX + 105, y);
+        // Done checkmark
+        if (done) {
+          ctx.fillStyle = C.good;
+          ctx.font = '600 14px system-ui, sans-serif';
+          ctx.fillText('✓', leftX + colW - 30, y);
+          // Strikethrough via a line
+          var titleW = ctx.measureText(title).width;
+          ctx.strokeStyle = C.textMut; ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(leftX + 105, y);
+          ctx.lineTo(leftX + 105 + Math.min(titleW, maxTitleW), y);
+          ctx.stroke();
+        }
+      });
+      if (TASKS.length > shownTasks.length) {
+        ctx.fillStyle = C.textMut;
+        ctx.font = '400 11px system-ui, sans-serif';
+        ctx.fillText('+ ' + (TASKS.length - shownTasks.length) + ' more', leftX + 20, bodyY + bodyH - 20);
+      }
+
+      // Roster column
+      ctx.fillStyle = C.panel;
+      ctx.fillRect(rightX, bodyY, colW, bodyH);
+      ctx.strokeStyle = C.border; ctx.strokeRect(rightX, bodyY, colW, bodyH);
+      ctx.fillStyle = C.accent;
+      ctx.font = '600 14px system-ui, sans-serif';
+      ctx.fillText(window.I18N.t('rosterHeading').toUpperCase(), rightX + 20, bodyY + 28);
+
+      var rRowY = bodyY + 60, rRowH = 32;
+      var rMaxRows = Math.floor((bodyH - 80) / rRowH);
+      var shownRoster = state.roster.slice(0, rMaxRows);
+      shownRoster.forEach(function (m, i) {
+        var y = rRowY + i * rRowH;
+        // Rank pill
+        ctx.fillStyle = C.panel2;
+        ctx.fillRect(rightX + 20, y - 12, 34, 18);
+        ctx.fillStyle = C.accent;
+        ctx.font = '600 10px ui-monospace, SFMono-Regular, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(m.rank || '—', rightX + 37, y - 3);
+        ctx.textAlign = 'left';
+        // Name
+        ctx.fillStyle = C.text;
+        ctx.font = '500 13px system-ui, sans-serif';
+        var displayName = truncateForWidth(ctx, m.name || '', 140);
+        ctx.fillText(displayName, rightX + 64, y);
+        // HQ / power
+        ctx.fillStyle = C.textMut;
+        ctx.font = '400 11px system-ui, sans-serif';
+        ctx.fillText('HQ' + (m.hq_level || '—') + '  ·  ' + fmtPower(m.total_power), rightX + 210, y);
+        // Progress bar
+        var applicable = TASKS.filter(function (t) { return (m.hq_level || 0) >= (t.min_hq || 0); });
+        var mDone = applicable.filter(function (t) { return !!state.tasks[t.id]; }).length;
+        var pct = applicable.length ? mDone / applicable.length : 0;
+        var barX = rightX + colW - 190, barY = y - 6, barW = 140, barH = 8;
+        ctx.fillStyle = C.panel2;
+        ctx.fillRect(barX, barY, barW, barH);
+        ctx.fillStyle = pct >= 0.66 ? C.good : (pct >= 0.33 ? C.accent : C.textMut);
+        ctx.fillRect(barX, barY, barW * pct, barH);
+        ctx.fillStyle = C.textDim;
+        ctx.font = '500 11px ui-monospace, SFMono-Regular, monospace';
+        ctx.fillText(Math.round(pct * 100) + '%', barX + barW + 8, y);
+      });
+      if (state.roster.length > shownRoster.length) {
+        ctx.fillStyle = C.textMut;
+        ctx.font = '400 11px system-ui, sans-serif';
+        ctx.fillText('+ ' + (state.roster.length - shownRoster.length) + ' more members', rightX + 20, bodyY + bodyH - 20);
+      }
+
+      // ---- Footer ----
+      ctx.fillStyle = C.textMut;
+      ctx.font = '400 12px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('r5tools.io  ·  ' + window.I18N.t('footerCred') + '  ·  ' + new Date().toISOString().slice(0, 10),
+                   W / 2, H - 30);
+      ctx.textAlign = 'left';
+
+      // ---- Trigger download ----
+      canvas.toBlob(function (blob) {
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        var slug = (state.config && state.config.alliance_name) ? state.config.alliance_name.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'alliance';
+        a.download = 'lws-season-timeline-' + slug + '-' + new Date().toISOString().slice(0, 10) + '.png';
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    }
+
+    // Helper: truncate a string with ellipsis if it exceeds maxWidth (in current ctx font).
+    function truncateForWidth(ctx, text, maxWidth) {
+      if (ctx.measureText(text).width <= maxWidth) return text;
+      var t = text;
+      while (t.length > 3 && ctx.measureText(t + '…').width > maxWidth) {
+        t = t.slice(0, -1);
+      }
+      return t + '…';
+    }
+
+    function exportIcal() {
+      // Minimal iCal stub — one VEVENT per task with a placeholder DTSTART based on season_start_iso.
+      // TODO(v1.1): compute actual per-task DTSTART from day_offset + season_start_iso.
+      var lines = [
+        'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//r5tools.io//LWS Season Timeline//EN'
+      ];
+      var start = state.config && state.config.season_start_iso ? new Date(state.config.season_start_iso) : new Date();
+      TASKS.forEach(function (t) {
+        var dt = new Date(start.getTime());
+        if (typeof t.day_offset === 'number') {
+          dt.setDate(dt.getDate() + t.day_offset - 1);
+        } else if (t.week) {
+          dt.setDate(dt.getDate() + (t.week - 1) * 7 + (t.weekday - 1));
+        }
+        var dtstamp = dt.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        lines.push('BEGIN:VEVENT');
+        lines.push('UID:' + t.id + '@r5tools.io');
+        lines.push('DTSTAMP:' + dtstamp);
+        lines.push('DTSTART:' + dtstamp);
+        lines.push('SUMMARY:' + window.I18N.t(t.title_key));
+        lines.push('DESCRIPTION:' + window.I18N.t(t.body_key));
+        lines.push('END:VEVENT');
+      });
+      lines.push('END:VCALENDAR');
+      downloadBlob(lines.join('\r\n'), 'lws-season-timeline.ics', 'text/calendar');
+    }
+    function exportCsv()  {
+      var rows = [['task_id','day_label','category','title','done']];
+      TASKS.forEach(function (t) {
+        rows.push([t.id, taskDayLabel(t), t.category, window.I18N.t(t.title_key), !!state.tasks[t.id]]);
+      });
+      downloadBlob(rows.map(function (r) { return r.map(csvCell).join(','); }).join('\n'),
+                   'lws-season-timeline.csv', 'text/csv');
+    }
+    function exportJson() {
+      var payload = {
+        tool: 'LWS Season Timeline',
+        version: '0.1.0',
+        config: state.config,
+        tasks: TASKS.map(function (t) {
+          return { id: t.id, day_offset: t.day_offset || null, week: t.week || null,
+                   weekday: t.weekday || null, category: t.category, min_hq: t.min_hq,
+                   done: !!state.tasks[t.id] };
+        }),
+        roster: state.roster,
+      };
+      downloadBlob(JSON.stringify(payload, null, 2), 'lws-season-timeline.json', 'application/json');
+    }
+    function csvCell(v) {
+      var s = String(v);
+      if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+      return s;
+    }
+    function downloadBlob(text, filename, type) {
+      var blob = new Blob([text], { type: type });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // ============================================================
+    // Wire up
+    // ============================================================
+    window.onLangChange = function () {
+      renderTaskTable();
+      renderRoster();
+      renderCountdown();
+    };
+
+    document.getElementById('langToggle').addEventListener('click', function () {
+      window.I18N.toggle();
+    });
+
+    document.getElementById('cfgSaveBtn').addEventListener('click', function (e) {
+      e.preventDefault();
+      saveConfig();
+    });
+
+    document.getElementById('rosterImportBtn').addEventListener('click', function () {
+      document.getElementById('rosterFile').click();
+    });
+    document.getElementById('rosterFile').addEventListener('change', function (e) {
+      var f = e.target.files && e.target.files[0];
+      if (!f) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        state.roster = parseRosterCsv(reader.result);
+        renderRoster();
+      };
+      reader.readAsText(f);
+    });
+
+    document.getElementById('exportPngBtn').addEventListener('click', exportPng);
+    document.getElementById('exportIcalBtn').addEventListener('click', exportIcal);
+    document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
+    document.getElementById('exportJsonBtn').addEventListener('click', exportJson);
+
+    document.getElementById('viewerSelect').addEventListener('change', function (e) {
+      state.currentMember = e.target.value;
+      renderTaskTable();
+    });
+
+    // Initial render (v0.3 flow: config → per-member tasks → populate viewer selector → render)
+    state.roster = MOCK_ROSTER;
+    Promise.all([loadConfigFromServer(), loadAllTasksFromServer()]).then(function (results) {
+      var serverTasks = results[1];
+      // Prefer server state (authoritative when available); fall back to localStorage
+      state.allTasks = serverTasks || loadFromStorage() || {};
+      // Also merge localStorage on top of server (in case offline edits happened)
+      var local = loadFromStorage();
+      Object.keys(local).forEach(function (m) {
+        state.allTasks[m] = Object.assign({}, state.allTasks[m] || {}, local[m]);
+      });
+      populateViewerSelect();
+      renderTaskTable();
+      renderRoster();
+      renderCountdown();
+      setInterval(renderCountdown, 1000);
+    });
+  })();
+  </script>
+</body>
+</html>
