@@ -166,17 +166,26 @@
 
     // ============================================================
     // Timeline task definitions.
-    // Every task cites the KB article that justifies it.
+    //
+    // v0.4 refactor (2026-07-15): the task list is now BUILT PER-SEASON from
+    // LWSSeasons.mechanics_config + milestones. There are three sources:
+    //
+    //   UNIVERSAL_TASKS   — season-agnostic prep (works for any LWS season)
+    //   S2_TASKS          — Season-2-specific (Alliance Furnace + thermal/blizzard/RSW mechanics)
+    //   milestone-derived — pulled from LWSSeasons.getMilestonesForTool(seasonId, 'season_timeline')
+    //
+    // buildTasksForSeason(seasonId) merges the three and returns the current TASKS.
     // Categories: economy | military | spatial | event
     // day_offset: negative = pre-season (T-minus), 1 = launch day, > 1 = Day N
     //             {week, weekday} = in-season, weekday 1=Mon..7=Sun
     // ============================================================
-    var TASKS = [
-      // ---- Pre-season (T-minus) ----
+
+    // Universal pre-season prep — applies to every LWS season (S1/S2/S3/…).
+    var UNIVERSAL_TASKS = [
       // KB: [[10-economy]] speedup save-up strategy — double-score during Arms Race overlap
       { id: 'save-speedups',     day_offset: -12, category: 'economy',  min_hq: 0,
         title_key: 'taskSaveSpeedupsTitle',   body_key: 'taskSaveSpeedupsBody' },
-      // KB: [[06-season-2-frozen]] HQ 30 unlocks High-Heat Furnace
+      // KB: [[06-season-2-frozen]] HQ ceiling before season locks in
       { id: 'finish-hq',         day_offset: -10, category: 'economy',  min_hq: 0,
         title_key: 'taskFinishHqTitle',       body_key: 'taskFinishHqBody' },
       // KB: [[10-economy]] warehouses protect at/below threshold; opened chests land in exposed pool
@@ -185,20 +194,23 @@
       // KB: [[09-events]] Fri Total Mobilization × Arms Race Unit Progression = waterfall training
       { id: 'train-troops',      day_offset: -5,  category: 'military', min_hq: 0,
         title_key: 'taskTrainTroopsTitle',    body_key: 'taskTrainTroopsBody' },
-      // KB: [[06-season-2-frozen]] outer corners -15 °C safest; center -80 °C
+      // Universal spatial task — every season needs a landing coordinate strategy.
       { id: 'choose-coords',     day_offset: -3,  category: 'spatial',  min_hq: 0,
         title_key: 'taskChooseCoordsTitle',   body_key: 'taskChooseCoordsBody' },
-      // KB: [[06-season-2-frozen]] Day-1 priority list — stack radar tasks for guaranteed coal
+      // KB: [[06-season-2-frozen]] Day-1 priority list — stack radar tasks for guaranteed rewards
       { id: 'stack-radar',       day_offset: -1,  category: 'economy',  min_hq: 0,
         title_key: 'taskStackRadarTitle',     body_key: 'taskStackRadarBody' },
-      // KB: [[06-season-2-frozen]] Alliance Furnace needs ~20 reinforcements to activate
+      // KB: alliance-help mechanic is season-agnostic; furnace-reinforcement wording is S2-only (handled below)
       { id: 'wake-roster',       day_offset: -1,  category: 'spatial',  min_hq: 0,
         title_key: 'taskAllianceHelpTitle',   body_key: 'taskAllianceHelpBody' },
-
-      // ---- Day 1 (season launch) ----
-      // KB: [[06-season-2-frozen]] free Assembly Point relocation trick
+      // Universal Day-1 spatial: relocate if needed (mechanic exists every season, phrasing intentionally generic)
       { id: 'd1-relocate',       day_offset: 1,   category: 'spatial',  min_hq: 0,
         title_key: 'taskD1RelocateTitle',     body_key: 'taskD1RelocateBody' },
+    ];
+
+    // Season-2 (Polar Storm) specific tasks — thermal/blizzard/furnace mechanics.
+    // These render only when season.id === 's2-polar-storm'.
+    var S2_TASKS = [
       // KB: [[06-season-2-frozen]] R4/R5 place Alliance Furnace on L1 territory, 20 reinforcements
       { id: 'd1-place-af',       day_offset: 1,   category: 'spatial',  min_hq: 0,
         title_key: 'taskD1PlaceAFTitle',      body_key: 'taskD1PlaceAFBody' },
@@ -214,38 +226,83 @@
       // KB: [[06-season-2-frozen]] Wanderer coal reward pays out post-map-transition only; L180 ≈ 200k coal
       { id: 'd1-wanderer',       day_offset: 1,   category: 'event',    min_hq: 0,
         title_key: 'taskD1WandererTitle',     body_key: 'taskD1WandererBody' },
-
-      // ---- In-season (Week N.weekday) ----
-      // KB: [[06-season-2-frozen]] L1 city (Village) unlock: W1 day 3+12h
-      { id: 'w1-city-unlock',    week: 1, weekday: 3, category: 'event',   min_hq: 0,
-        title_key: 'taskW1CityTitle',         body_key: 'taskW1CityBody' },
-      // KB: [[06-season-2-frozen]] Wk3 Faction Awards event — Rebels vs Gendarmerie vote
-      { id: 'w3-faction',        week: 3, weekday: 1, category: 'event',   min_hq: 0,
-        title_key: 'taskW3FactionTitle',      body_key: 'taskW3FactionBody' },
-      // KB: [[06-season-2-frozen]] Wk4 -70 °C blizzard runs concurrently with Rare Soil War
-      { id: 'w4-rare-soil-prep', week: 4, weekday: 1, category: 'event',   min_hq: 0,
-        title_key: 'taskW4RareSoilTitle',     body_key: 'taskW4RareSoilBody' },
       // KB: [[06-season-2-frozen]] Warlord Missile 25×25 tiles; park 5 tiles from own furnace
       { id: 'w4-missile-move',   week: 4, weekday: 1, category: 'spatial', min_hq: 0,
         title_key: 'taskW4MissileTitle',      body_key: 'taskW4MissileBody' },
-
-      // ---- Wk 5-8 (end-game — Rare Soil War rounds, Glacieradon, Nuclear Furnace siege) ----
-      // KB: [[06-season-2-frozen]] "Weeks 4-end = active Rare Soil War rounds twice per week"
-      { id: 'w5-soil-round',     week: 5, weekday: 3, category: 'event',   min_hq: 0,
-        title_key: 'taskW5SoilRoundTitle',    body_key: 'taskW5SoilRoundBody' },
-      // KB: [[06-season-2-frozen]] Free Grouping Teleport unlocks Week 3 — becomes strategic mid-Rare-Soil
+      // KB: [[06-season-2-frozen]] Free Grouping Teleport unlocks Week 3 — strategic mid-Rare-Soil
       { id: 'w5-grouping-tp',    week: 5, weekday: 1, category: 'spatial', min_hq: 0,
         title_key: 'taskW5GroupingTPTitle',   body_key: 'taskW5GroupingTPBody' },
-      // KB: [[06-season-2-frozen]] "Four Glacieradon boss monsters spawn and march toward the Nuclear Furnace"
-      { id: 'w6-glacieradon',    week: 6, weekday: 1, category: 'event',   min_hq: 0,
-        title_key: 'taskW6GlacieradonTitle',  body_key: 'taskW6GlacieradonBody' },
       // KB gap: [[06-season-2-frozen]] open question #9 — Nuclear Furnace siege mechanics not fully documented
       { id: 'w7-siege-prep',     week: 7, weekday: 3, category: 'military', min_hq: 25,
         title_key: 'taskW7SiegePrepTitle',    body_key: 'taskW7SiegePrepBody' },
-      // KB: [[06-season-2-frozen]] "eventual Nuclear Furnace (Capitol) siege" — final push
-      { id: 'w8-nuclear-siege',  week: 8, weekday: 6, category: 'event',   min_hq: 25,
-        title_key: 'taskW8NuclearSiegeTitle', body_key: 'taskW8NuclearSiegeBody' },
     ];
+
+    // Map milestone.event → category (best-effort, defaults to 'event').
+    function categoryForMilestone(m) {
+      var e = (m.event || '').toLowerCase();
+      if (e.indexOf('blizzard') !== -1 || e.indexOf('freeze') !== -1) return 'military';
+      if (e.indexOf('furnace') !== -1 || e.indexOf('landing') !== -1 || e.indexOf('teleport') !== -1) return 'spatial';
+      if (e.indexOf('city_') !== -1 || e.indexOf('trade_post') !== -1) return 'event';
+      return 'event';
+    }
+
+    // Build the merged TASKS list for a given season + milestones array.
+    // Milestones tagged with `tools: [...season_timeline...]` become in-season event rows.
+    // Falls back to a "coming soon" placeholder if the season has no timeline milestones.
+    function buildTasksForSeason(season, milestones) {
+      var out = UNIVERSAL_TASKS.slice();
+
+      var sid = season && season.id;
+      if (sid === 's2-polar-storm') {
+        // Merge S2-specific Day-1 + in-season tasks that don't come from milestones.
+        S2_TASKS.forEach(function (t) { out.push(t); });
+      }
+
+      // Add milestones tagged with 'season_timeline' as in-season event rows.
+      (milestones || []).forEach(function (m) {
+        if (typeof m.week !== 'number') return;
+        var weekday = (typeof m.day === 'number' ? m.day : 1);
+        // Build a stable id from event or coordinates so per-member ticks survive re-renders.
+        var id = 'ms-' + (m.event || ('w' + m.week + 'd' + weekday));
+        // Prefer the current i18n language name if available; fall back to en.
+        var lang = (window.I18N && window.I18N.get && window.I18N.get()) || 'en';
+        var langKey = (lang === 'ko') ? 'kr' : lang;
+        var label = (m.label && (m.label[langKey] || m.label.en)) || m.event || '';
+        out.push({
+          id: id,
+          week: m.week,
+          weekday: weekday,
+          category: categoryForMilestone(m),
+          min_hq: 0,
+          _milestone: true,
+          _title: label,
+          _body: '',
+          _severity: m.severity || null,
+        });
+      });
+
+      // Graceful fallback: if the season has ZERO in-season content (universal-only), add a
+      // "coming soon" placeholder so users understand the tool doesn't have data for this
+      // season yet rather than silently truncating the timeline.
+      var hasInSeason = out.some(function (t) {
+        return typeof t.week === 'number' || (typeof t.day_offset === 'number' && t.day_offset >= 1);
+      });
+      if (!hasInSeason) {
+        out.push({
+          id: 'placeholder-in-season',
+          week: 1, weekday: 1,
+          category: 'event',
+          min_hq: 0,
+          _milestone: true,
+          _title: window.I18N.t('placeholderInSeasonTitle'),
+          _body: window.I18N.t('placeholderInSeasonBody'),
+        });
+      }
+      return out;
+    }
+
+    // Live TASKS array — replaced by buildTasksForSeason() at boot + on season change.
+    var TASKS = UNIVERSAL_TASKS.slice();
 
     // ============================================================
     // State (v0.3: per-member task persistence)
@@ -264,6 +321,8 @@
         return this.allTasks[this.currentMember];
       },
       roster: [],
+      season: null,        // {id, name, ...} from LWSSeasons.resolveContext (v0.4)
+      milestones: [],      // milestones tagged with 'season_timeline' for the current season
     };
 
     // localStorage backup — used on network failure or in static-only deploys
@@ -398,6 +457,17 @@
       return 'tl-day season';
     }
 
+    // v0.4: some tasks come from LWSSeasons milestones — their title/body are inlined on
+    // the task object (t._title/t._body) instead of via i18n keys. Fall back appropriately.
+    function taskTitle(t) {
+      if (t._milestone) return t._title || '';
+      return window.I18N.t(t.title_key);
+    }
+    function taskBody(t) {
+      if (t._milestone) return t._body || '';
+      return window.I18N.t(t.body_key);
+    }
+
     function renderTaskTable() {
       var tbody = document.getElementById('tlBody');
       tbody.innerHTML = '';
@@ -412,10 +482,18 @@
         var tdTask = document.createElement('td');
         var title = document.createElement('div');
         title.className = 'tl-task-title';
-        title.textContent = window.I18N.t(t.title_key);
+        title.textContent = taskTitle(t);
+        // Optional severity pill on milestone rows (warning/danger/critical)
+        if (t._severity) {
+          var sev = document.createElement('span');
+          sev.textContent = ' · ' + t._severity;
+          sev.style.cssText = 'font-size:10px;text-transform:uppercase;letter-spacing:.08em;margin-left:6px;color:' +
+            (t._severity === 'critical' ? '#e08a8a' : t._severity === 'danger' ? '#e0b48a' : '#c9a961');
+          title.appendChild(sev);
+        }
         var body = document.createElement('div');
         body.className = 'tl-task-body';
-        body.textContent = window.I18N.t(t.body_key);
+        body.textContent = taskBody(t);
         tdTask.appendChild(title);
         tdTask.appendChild(body);
         tr.appendChild(tdTask);
@@ -681,7 +759,7 @@
         var done = !!state.tasks[t.id];
         ctx.fillStyle = done ? C.textMut : C.text;
         ctx.font = (done ? '400 ' : '500 ') + '13px system-ui, sans-serif';
-        var title = window.I18N.t(t.title_key);
+        var title = taskTitle(t);
         var maxTitleW = colW - 140;
         title = truncateForWidth(ctx, title, maxTitleW);
         ctx.fillText(title, leftX + 105, y);
@@ -803,8 +881,8 @@
         lines.push('UID:' + t.id + '@r5tools.io');
         lines.push('DTSTAMP:' + dtstamp);
         lines.push('DTSTART:' + dtstamp);
-        lines.push('SUMMARY:' + window.I18N.t(t.title_key));
-        lines.push('DESCRIPTION:' + window.I18N.t(t.body_key));
+        lines.push('SUMMARY:' + taskTitle(t));
+        lines.push('DESCRIPTION:' + taskBody(t));
         lines.push('END:VEVENT');
       });
       lines.push('END:VCALENDAR');
@@ -813,7 +891,7 @@
     function exportCsv()  {
       var rows = [['task_id','day_label','category','title','done']];
       TASKS.forEach(function (t) {
-        rows.push([t.id, taskDayLabel(t), t.category, window.I18N.t(t.title_key), !!state.tasks[t.id]]);
+        rows.push([t.id, taskDayLabel(t), t.category, taskTitle(t), !!state.tasks[t.id]]);
       });
       downloadBlob(rows.map(function (r) { return r.map(csvCell).join(','); }).join('\n'),
                    'lws-season-timeline.csv', 'text/csv');
@@ -847,9 +925,67 @@
     }
 
     // ============================================================
+    // Season binding (v0.4) — resolve current warzone → season → milestones,
+    // rebuild TASKS, and update the visible title / countdown label.
+    // ============================================================
+    function updateHeaderForSeason(season) {
+      if (!season) return;
+      var lang = (window.I18N && window.I18N.get && window.I18N.get()) || 'en';
+      var nameKey = (lang === 'ko') ? 'kr' : lang;
+      var name = (season.name && (season.name[nameKey] || season.name.en)) || season.id;
+      // Header title: "<season name> · Timeline"
+      var titleEl = document.querySelector('h1.page-title');
+      if (titleEl) titleEl.textContent = name + ' · ' + window.I18N.t('timelineHeading');
+      // Countdown label + config label — replace hardcoded "Season 2" strings.
+      var cdLabel = document.getElementById('countdownLabel');
+      if (cdLabel) cdLabel.textContent = window.I18N.t('countdownUntil') + ' ' + name;
+      var cfgSeasonStartLabel = document.querySelector('label[for="cfgSeasonStart"]');
+      if (cfgSeasonStartLabel) cfgSeasonStartLabel.textContent = name + ' — ' + window.I18N.t('configSeasonStartShort');
+    }
+
+    function refreshFromSeason() {
+      if (!window.LWSSeasons) {
+        // seasons-lib.js hasn't loaded (offline or CDN failure) — stick with S2 defaults.
+        console.warn('[LWS] LWSSeasons not available; using S2 defaults');
+        state.season = { id: 's2-polar-storm', name: { en: 'Season 2: Polar Storm' } };
+        state.milestones = [];
+        TASKS = buildTasksForSeason(state.season, state.milestones);
+        updateHeaderForSeason(state.season);
+        renderTaskTable();
+        renderRoster();
+        renderCountdown();
+        return;
+      }
+      return window.LWSSeasons.resolveContext().then(function (ctx) {
+        state.season = ctx.season || { id: 's2-polar-storm', name: { en: 'Season 2: Polar Storm' } };
+        return window.LWSSeasons.getMilestonesForTool(state.season.id, 'season_timeline');
+      }).then(function (ms) {
+        state.milestones = ms || [];
+        TASKS = buildTasksForSeason(state.season, state.milestones);
+        updateHeaderForSeason(state.season);
+        renderTaskTable();
+        renderRoster();
+        renderCountdown();
+      }).catch(function (err) {
+        console.warn('[LWS] refreshFromSeason failed, falling back:', err);
+        state.season = { id: 's2-polar-storm', name: { en: 'Season 2: Polar Storm' } };
+        state.milestones = [];
+        TASKS = buildTasksForSeason(state.season, state.milestones);
+        renderTaskTable();
+      });
+    }
+
+    // Re-render when the shared warzone/season selector changes.
+    window.addEventListener('lws:season-changed', function () { refreshFromSeason(); });
+    window.addEventListener('lws:warzone-changed', function () { refreshFromSeason(); });
+
+    // ============================================================
     // Wire up
     // ============================================================
     window.onLangChange = function () {
+      // Rebuild tasks so milestone labels pick the new language
+      TASKS = buildTasksForSeason(state.season, state.milestones);
+      updateHeaderForSeason(state.season);
       renderTaskTable();
       renderRoster();
       renderCountdown();
@@ -900,9 +1036,14 @@
         state.allTasks[m] = Object.assign({}, state.allTasks[m] || {}, local[m]);
       });
       populateViewerSelect();
-      renderTaskTable();
-      renderRoster();
-      renderCountdown();
+      // v0.4: refreshFromSeason bootstraps TASKS from LWSSeasons before first render
+      var didSeasonRefresh = refreshFromSeason();
+      if (!didSeasonRefresh || typeof didSeasonRefresh.then !== 'function') {
+        // Synchronous fallback path — render immediately.
+        renderTaskTable();
+        renderRoster();
+        renderCountdown();
+      }
       setInterval(renderCountdown, 1000);
     });
   })();

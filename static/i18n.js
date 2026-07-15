@@ -42,6 +42,7 @@
 
       // ---- Countdown ----
       countdownLabel: 'Until Season 2 launch',
+      countdownUntil: 'Until',                              // v0.4: prefix built from LWSSeasons.name
       countdownDay: 'd',
       countdownHour: 'h',
       countdownMin: 'm',
@@ -49,6 +50,11 @@
       countdownPreseason: 'Pre-season',
       countdownLive: 'LIVE — Season 2 is running',
       countdownTPlus: 'Day',
+      configSeasonStartShort: 'start (server time)',        // v0.4: appended to "<Season Name>"
+
+      // ---- v0.4 placeholders (shown when a season has no timeline milestones yet) ----
+      placeholderInSeasonTitle: 'Timeline coming soon',
+      placeholderInSeasonBody: 'This season doesn\'t have per-week milestones in the LWS Knowledge Base yet. Pre-season prep tasks still apply.',
 
       // ---- Category legend ----
       catEconomy: 'Economy',
@@ -191,6 +197,7 @@
 
       // ---- Countdown ----
       countdownLabel: '시즌 2 오픈까지',
+      countdownUntil: '까지',                                // v0.4: suffix after "<Season Name>"
       countdownDay: '일',
       countdownHour: '시',
       countdownMin: '분',
@@ -198,6 +205,11 @@
       countdownPreseason: '사전 시즌',
       countdownLive: '진행 중 — 시즌 2 오픈',
       countdownTPlus: '일차',
+      configSeasonStartShort: '시작 (서버 시간)',            // v0.4: appended to "<시즌 이름>"
+
+      // ---- v0.4 placeholders ----
+      placeholderInSeasonTitle: '타임라인 준비 중',
+      placeholderInSeasonBody: '이 시즌은 아직 LWS 지식 베이스에 주차별 마일스톤이 정리되지 않았습니다. 사전 시즌 준비 과제는 여전히 유효합니다.',
 
       // ---- Category legend ----
       catEconomy: '경제',
