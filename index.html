@@ -111,6 +111,7 @@
           <button id="rosterImportBtn" data-i18n="rosterImportCsv">Import roster CSV</button>
           <input type="file" id="rosterFile" accept=".csv,text/csv" hidden />
         </div>
+        <div id="lws-roster-picker"></div>
         <div class="hint" data-i18n="rosterImportHint">Same CSV format as the Hive Grid Manager (name, rank, hq_level, total_power, notes).</div>
 
         <div id="rosterBody" style="margin-top:16px">
@@ -902,5 +903,25 @@
     });
   })();
   </script>
+
+  <script src="static/roster-picker.js" defer></script>
+  <script>
+    window.addEventListener('lws:roster-loaded', function (ev) {
+      var rows = ev.detail.rows;
+      if (!rows || !rows.length) return;
+      var headers = Object.keys(rows[0]);
+      var csv = headers.join(',') + '
+' +
+        rows.map(function (r) { return headers.map(function (h) { return (r[h] || ''); }).join(','); }).join('
+');
+      var input = document.getElementById('rosterFile');
+      if (!input) { console.warn('[LWS] roster input not found'); return; }
+      var dt = new DataTransfer();
+      dt.items.add(new File([csv], ev.detail.name + '.csv', { type: 'text/csv' }));
+      input.files = dt.files;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+  </script>
+
 </body>
 </html>

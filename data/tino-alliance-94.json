@@ -1,0 +1,663 @@
+{
+  "alliance_name": "TINO 티노",
+  "members": [
+    {
+      "name": "TINO 티노",
+      "rank": "R5",
+      "hq_level": 30,
+      "power": "",
+      "notes": ""
+    },
+    {
+      "name": "Beccs 베카",
+      "rank": "R4",
+      "hq_level": 30,
+      "power": "107700000",
+      "notes": ""
+    },
+    {
+      "name": "Chris 데마",
+      "rank": "R4",
+      "hq_level": 30,
+      "power": "140200000",
+      "notes": ""
+    },
+    {
+      "name": "ELLA 엘라",
+      "rank": "R4",
+      "hq_level": 30,
+      "power": "142500000",
+      "notes": "titled:recruiter"
+    },
+    {
+      "name": "HollyHornet 홀리",
+      "rank": "R4",
+      "hq_level": 30,
+      "power": "100000000",
+      "notes": "titled:butler"
+    },
+    {
+      "name": "Sunflwr 해바라기",
+      "rank": "R4",
+      "hq_level": 30,
+      "power": "81800000",
+      "notes": ""
+    },
+    {
+      "name": "TRI 트리",
+      "rank": "R4",
+      "hq_level": 30,
+      "power": "114200000",
+      "notes": ""
+    },
+    {
+      "name": "chaechae riata",
+      "rank": "R4",
+      "hq_level": 30,
+      "power": "101500000",
+      "notes": "titled:muse"
+    },
+    {
+      "name": "goblue RONy",
+      "rank": "R4",
+      "hq_level": 30,
+      "power": "144900000",
+      "notes": ""
+    },
+    {
+      "name": "나궁 Geung",
+      "rank": "R4",
+      "hq_level": 30,
+      "power": "132800000",
+      "notes": ""
+    },
+    {
+      "name": "사랑스러운 GiLL",
+      "rank": "R4",
+      "hq_level": 30,
+      "power": "107200000",
+      "notes": ""
+    },
+    {
+      "name": "ALO 알로",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "137600000",
+      "notes": ""
+    },
+    {
+      "name": "Almeric",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "121600000",
+      "notes": ""
+    },
+    {
+      "name": "Candy RONy",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "77100000",
+      "notes": ""
+    },
+    {
+      "name": "Clay 준호 J",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "131400000",
+      "notes": ""
+    },
+    {
+      "name": "Cloud 구름00",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "68600000",
+      "notes": ""
+    },
+    {
+      "name": "D THOR G",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "124600000",
+      "notes": ""
+    },
+    {
+      "name": "DHEE 희짱G",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "130400000",
+      "notes": ""
+    },
+    {
+      "name": "DSeven 펀치G",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "78900000",
+      "notes": ""
+    },
+    {
+      "name": "END 끝",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "97800000",
+      "notes": ""
+    },
+    {
+      "name": "GG 베베",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "82900000",
+      "notes": ""
+    },
+    {
+      "name": "Gold3nDestroy3r",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "95900000",
+      "notes": ""
+    },
+    {
+      "name": "Good Roy",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "100900000",
+      "notes": ""
+    },
+    {
+      "name": "Ha jun 하준",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "152400000",
+      "notes": ""
+    },
+    {
+      "name": "Haku나 Mata타",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "159600000",
+      "notes": ""
+    },
+    {
+      "name": "Irène 홀린",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "106700000",
+      "notes": ""
+    },
+    {
+      "name": "JIYU 지유",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "92100000",
+      "notes": ""
+    },
+    {
+      "name": "K man 쿤트",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "83600000",
+      "notes": ""
+    },
+    {
+      "name": "K3Tanks",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "89500000",
+      "notes": ""
+    },
+    {
+      "name": "KT6QTIP429",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "119700000",
+      "notes": ""
+    },
+    {
+      "name": "KiN FiN",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "78000000",
+      "notes": ""
+    },
+    {
+      "name": "Krathoos",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "127300000",
+      "notes": ""
+    },
+    {
+      "name": "Layaaaaaaaaa",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "92600000",
+      "notes": ""
+    },
+    {
+      "name": "Leo 또짱",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "124600000",
+      "notes": ""
+    },
+    {
+      "name": "Leonardo DIcaprio",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "87800000",
+      "notes": ""
+    },
+    {
+      "name": "Lnad",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "99600000",
+      "notes": ""
+    },
+    {
+      "name": "M A Gs 7",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "109100000",
+      "notes": ""
+    },
+    {
+      "name": "MANOFTHEWEST 서쪽",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "96300000",
+      "notes": ""
+    },
+    {
+      "name": "Maharlika SakdalLaya",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "145500000",
+      "notes": ""
+    },
+    {
+      "name": "Motley 츄",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "109000000",
+      "notes": ""
+    },
+    {
+      "name": "Nano Reactor 나노",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "119500000",
+      "notes": ""
+    },
+    {
+      "name": "NewJeans 뉴진스님",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "91500000",
+      "notes": ""
+    },
+    {
+      "name": "Rampage83",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "90000000",
+      "notes": ""
+    },
+    {
+      "name": "Rebel Moon",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "134800000",
+      "notes": ""
+    },
+    {
+      "name": "RiaMGR 뺑매",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "127600000",
+      "notes": ""
+    },
+    {
+      "name": "SKY2007",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "149300000",
+      "notes": ""
+    },
+    {
+      "name": "THEMUDMAN 머드맨",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "80100000",
+      "notes": ""
+    },
+    {
+      "name": "Trip Z",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "98100000",
+      "notes": ""
+    },
+    {
+      "name": "Your Cousin",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "88800000",
+      "notes": ""
+    },
+    {
+      "name": "ZenosHalfwayHouse",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "84500000",
+      "notes": ""
+    },
+    {
+      "name": "buraktr",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "126700000",
+      "notes": ""
+    },
+    {
+      "name": "mifay",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "94500000",
+      "notes": ""
+    },
+    {
+      "name": "milim 아이",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "124000000",
+      "notes": ""
+    },
+    {
+      "name": "∞ 이 꾹 ∞",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "129800000",
+      "notes": ""
+    },
+    {
+      "name": "美美与共 Eunoia",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "77300000",
+      "notes": ""
+    },
+    {
+      "name": "꽃돌이 dooly",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "97100000",
+      "notes": ""
+    },
+    {
+      "name": "나비 oiio nabil",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "103300000",
+      "notes": ""
+    },
+    {
+      "name": "넘버원나이스",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "105400000",
+      "notes": ""
+    },
+    {
+      "name": "다아시 Darcy",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "80300000",
+      "notes": ""
+    },
+    {
+      "name": "레레요 ReRe",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "87200000",
+      "notes": ""
+    },
+    {
+      "name": "루비 보스",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "86300000",
+      "notes": ""
+    },
+    {
+      "name": "미슈옴 mishu oppa",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "131800000",
+      "notes": ""
+    },
+    {
+      "name": "바다사랑 sea love",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "107400000",
+      "notes": ""
+    },
+    {
+      "name": "부시도 BuShido",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "79100000",
+      "notes": ""
+    },
+    {
+      "name": "비트코인 Die",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "68300000",
+      "notes": ""
+    },
+    {
+      "name": "썬디 SWIFT",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "127300000",
+      "notes": ""
+    },
+    {
+      "name": "엔젤쿠루미",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "105600000",
+      "notes": ""
+    },
+    {
+      "name": "용감한초이 Choi",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "111700000",
+      "notes": ""
+    },
+    {
+      "name": "이더리움 Die",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "100300000",
+      "notes": ""
+    },
+    {
+      "name": "초리 Chori",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "91700000",
+      "notes": ""
+    },
+    {
+      "name": "쿡크닥스",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "73200000",
+      "notes": ""
+    },
+    {
+      "name": "해디 Haddie",
+      "rank": "R3",
+      "hq_level": 30,
+      "power": "124800000",
+      "notes": ""
+    },
+    {
+      "name": "ATsubaki",
+      "rank": "R2",
+      "hq_level": 30,
+      "power": "97800000",
+      "notes": ""
+    },
+    {
+      "name": "BabyDJT 디제이",
+      "rank": "R2",
+      "hq_level": 30,
+      "power": "109300000",
+      "notes": ""
+    },
+    {
+      "name": "Cesar 세자르",
+      "rank": "R2",
+      "hq_level": 30,
+      "power": "",
+      "notes": ""
+    },
+    {
+      "name": "DUDUartina",
+      "rank": "R2",
+      "hq_level": 30,
+      "power": "84500000",
+      "notes": ""
+    },
+    {
+      "name": "EunJan 은잔",
+      "rank": "R2",
+      "hq_level": 30,
+      "power": "82500000",
+      "notes": ""
+    },
+    {
+      "name": "Evan 에반85",
+      "rank": "R2",
+      "hq_level": 30,
+      "power": "102200000",
+      "notes": ""
+    },
+    {
+      "name": "HST 동대표",
+      "rank": "R2",
+      "hq_level": 29,
+      "power": "61300000",
+      "notes": ""
+    },
+    {
+      "name": "Landlord Smoke",
+      "rank": "R2",
+      "hq_level": 30,
+      "power": "115200000",
+      "notes": ""
+    },
+    {
+      "name": "Pinky 熊熊",
+      "rank": "R2",
+      "hq_level": 30,
+      "power": "95000000",
+      "notes": ""
+    },
+    {
+      "name": "Poisinner 독살자",
+      "rank": "R2",
+      "hq_level": 30,
+      "power": "79300000",
+      "notes": ""
+    },
+    {
+      "name": "RoboKopp",
+      "rank": "R2",
+      "hq_level": 29,
+      "power": "98400000",
+      "notes": ""
+    },
+    {
+      "name": "Scarlettbb",
+      "rank": "R2",
+      "hq_level": 29,
+      "power": "79200000",
+      "notes": ""
+    },
+    {
+      "name": "Sox833",
+      "rank": "R2",
+      "hq_level": 29,
+      "power": "71700000",
+      "notes": ""
+    },
+    {
+      "name": "Spaz2311",
+      "rank": "R2",
+      "hq_level": 30,
+      "power": "122600000",
+      "notes": ""
+    },
+    {
+      "name": "WhooseReadyTo BUMBLE",
+      "rank": "R2",
+      "hq_level": 29,
+      "power": "93300000",
+      "notes": ""
+    },
+    {
+      "name": "kunicccc",
+      "rank": "R2",
+      "hq_level": 29,
+      "power": "92700000",
+      "notes": ""
+    },
+    {
+      "name": "떠날 Tanjiro",
+      "rank": "R2",
+      "hq_level": 30,
+      "power": "67900000",
+      "notes": ""
+    },
+    {
+      "name": "로니 ROGUE",
+      "rank": "R2",
+      "hq_level": 29,
+      "power": "91400000",
+      "notes": ""
+    },
+    {
+      "name": "무적 Jack Sparrow",
+      "rank": "R2",
+      "hq_level": 30,
+      "power": "78700000",
+      "notes": ""
+    },
+    {
+      "name": "이민철 Min",
+      "rank": "R2",
+      "hq_level": 28,
+      "power": "53600000",
+      "notes": ""
+    },
+    {
+      "name": "자베스 Zabeth",
+      "rank": "R2",
+      "hq_level": 30,
+      "power": "66099999",
+      "notes": ""
+    },
+    {
+      "name": "투얼진이",
+      "rank": "R2",
+      "hq_level": 27,
+      "power": "45600000",
+      "notes": ""
+    }
+  ]
+}
