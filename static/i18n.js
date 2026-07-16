@@ -56,6 +56,13 @@
       placeholderInSeasonTitle: 'Timeline coming soon',
       placeholderInSeasonBody: 'This season doesn\'t have per-week milestones in the LWS Knowledge Base yet. Pre-season prep tasks still apply.',
 
+      // ---- v0.5 Season 7 placeholder (real KB-cited copy, not a generic stub) ----
+      // KB: kb/07-future-seasons.md — S7 confirmed launch ~August 2026 via YouTube signals
+      // 2026-07-09 + 2026-07-13; actual leak pulled within 24h. No mechanics confirmed as of 2026-07-15.
+      s7ComingTitle: 'Season 7 launches ~August 2026',
+      s7ComingBody: 'Full timeline support arrives when First Fun publishes S7\'s mechanics. Two YouTube signals from ~2026-07-09 and ~2026-07-13 confirm launch this August, but the actual leak was pulled within 24 hours before being indexed. No theme, hero rotation, resource list, or map layout is confirmed as of 2026-07-15. Pattern-inference from S3–S6: 2-week pre-season + 8-week main season; Hero Awakening rotation W1/W3/W6 (F2P-only per permanent monetization shift mid-S6); faction system likely retained; T12 troops possible at celebration week (overdue by community consensus — Whiteout Survival shipped T12 April 27, 2026). Pre-season universal prep still applies — see tasks below. Track: r5tools.io',
+      s7ComingCountdown: 'S7 Countdown (estimated)',
+
       // ---- Category legend ----
       catEconomy: 'Economy',
       catMilitary: 'Military',
@@ -440,6 +447,12 @@
       // ---- v0.4 placeholders ----
       placeholderInSeasonTitle: '타임라인 준비 중',
       placeholderInSeasonBody: '이 시즌은 아직 LWS 지식 베이스에 주차별 마일스톤이 정리되지 않았습니다. 사전 시즌 준비 과제는 여전히 유효합니다.',
+
+      // ---- v0.5 시즌 7 플레이스홀더 ----
+      // KB: kb/07-future-seasons.md — S7 2026년 8월 출시 확정 (YouTube 2026-07-09, 07-13 신호)
+      s7ComingTitle: '시즌 7 출시 예정 — 2026년 8월경',
+      s7ComingBody: 'S7 메커니즘이 공개되면 타임라인 지원이 시작됩니다. YouTube 신호 2건(2026-07-09, 2026-07-13)이 8월 출시를 확인했지만 실제 유출은 24시간 이내 삭제되어 인덱싱 전에 사라졌습니다. 2026-07-15 기준 테마·영웅 로테이션·자원·지도 미확정. S3–S6 패턴 추정: 2주 사전 시즌 + 8주 본 시즌 · 영웅 각성 W1/W3/W6 (S6 중반부터 영구 무과금 전환) · 팩션 시스템 유지 예상 · 축하 주간 T12 병력 가능성 (커뮤니티 여론 · Whiteout Survival 2026-04-27 T12 출시로 지연 인식). 아래 사전 시즌 만능 준비 과제는 여전히 유효. 추적: r5tools.io',
+      s7ComingCountdown: 'S7 카운트다운 (추정)',
 
       // ---- Category legend ----
       catEconomy: '경제',

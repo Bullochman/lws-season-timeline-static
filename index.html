@@ -592,7 +592,9 @@
 
       var sid = season && season.id;
       // Per-season branches — each adds prep + in-season tasks not covered by milestone rows.
-      // S7 intentionally omitted — placeholder-only season with no confirmed mechanics as of 2026-07-15.
+      // S7 gets a dedicated KB-cited placeholder row (see fallback block below) — universal
+      // pre-season prep still applies but no season-specific tasks are known as of 2026-07-15.
+      var isS7 = (sid === 's7' || sid === 's7-unnamed' || (sid && sid.indexOf('s7') === 0));
       if (sid === 's1-crimson-plague') {
         S1_TASKS.forEach(function (t) { out.push(t); });
       } else if (sid === 's2-polar-storm') {
@@ -638,14 +640,17 @@
         return typeof t.week === 'number' || (typeof t.day_offset === 'number' && t.day_offset >= 1);
       });
       if (!hasInSeason) {
+        // S7 gets a distinct KB-cited placeholder (launch ~August 2026, no mechanics confirmed).
+        // All other empty seasons fall back to the generic "coming soon" placeholder.
+        var useS7 = isS7;
         out.push({
-          id: 'placeholder-in-season',
+          id: useS7 ? 'placeholder-s7-coming' : 'placeholder-in-season',
           week: 1, weekday: 1,
           category: 'event',
           min_hq: 0,
           _milestone: true,
-          _title: window.I18N.t('placeholderInSeasonTitle'),
-          _body: window.I18N.t('placeholderInSeasonBody'),
+          _title: window.I18N.t(useS7 ? 's7ComingTitle' : 'placeholderInSeasonTitle'),
+          _body: window.I18N.t(useS7 ? 's7ComingBody' : 'placeholderInSeasonBody'),
         });
       }
       return out;
@@ -1283,12 +1288,19 @@
       var lang = (window.I18N && window.I18N.get && window.I18N.get()) || 'en';
       var nameKey = (lang === 'ko') ? 'kr' : lang;
       var name = (season.name && (season.name[nameKey] || season.name.en)) || season.id;
+      var sid = season.id || '';
+      var isS7 = (sid === 's7' || sid === 's7-unnamed' || sid.indexOf('s7') === 0);
       // Header title: "<season name> · Timeline"
       var titleEl = document.querySelector('h1.page-title');
       if (titleEl) titleEl.textContent = name + ' · ' + window.I18N.t('timelineHeading');
       // Countdown label + config label — replace hardcoded "Season 2" strings.
+      // S7: countdown is estimated ("~August 2026"), not a precise timestamp — use dedicated label.
       var cdLabel = document.getElementById('countdownLabel');
-      if (cdLabel) cdLabel.textContent = window.I18N.t('countdownUntil') + ' ' + name;
+      if (cdLabel) {
+        cdLabel.textContent = isS7
+          ? window.I18N.t('s7ComingCountdown')
+          : (window.I18N.t('countdownUntil') + ' ' + name);
+      }
       var cfgSeasonStartLabel = document.querySelector('label[for="cfgSeasonStart"]');
       if (cfgSeasonStartLabel) cfgSeasonStartLabel.textContent = name + ' — ' + window.I18N.t('configSeasonStartShort');
     }
