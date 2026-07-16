@@ -149,7 +149,7 @@
     // Production: point at the deployed access-codes subdomain.
     // window.LWS_ACCESS_CODES_BASE_URL = 'https://access-codes.r5tools.io';
   </script>
-  <script src="https://access-codes.r5tools.io/lib.js" onerror="console.warn('[LWS] access-codes lib unreachable — running in ungated dev mode')"></script>
+  <script src="https://web-production-456d4.up.railway.app/lib.js" onerror="console.warn('[LWS] access-codes lib unreachable — running in ungated dev mode')"></script>
   <script>
     if (window.LWSAccessCodes && typeof window.LWSAccessCodes.gate === 'function') {
       window.LWSAccessCodes.gate('main-app');
