@@ -195,8 +195,10 @@
       { id: 'train-troops',      day_offset: -5,  category: 'military', min_hq: 0,
         title_key: 'taskTrainTroopsTitle',    body_key: 'taskTrainTroopsBody' },
       // Universal spatial task — every season needs a landing coordinate strategy.
+      // Body was S2-leaked ("-15 °C ambient / -50 °C ring"); swapped to a generic body.
+      // Each per-season block below adds its OWN more-specific coord task.
       { id: 'choose-coords',     day_offset: -3,  category: 'spatial',  min_hq: 0,
-        title_key: 'taskChooseCoordsTitle',   body_key: 'taskChooseCoordsBody' },
+        title_key: 'taskChooseCoordsTitle',   body_key: 'taskChooseCoordsBodyGeneric' },
       // KB: [[06-season-2-frozen]] Day-1 priority list — stack radar tasks for guaranteed rewards
       { id: 'stack-radar',       day_offset: -1,  category: 'economy',  min_hq: 0,
         title_key: 'taskStackRadarTitle',     body_key: 'taskStackRadarBody' },
@@ -237,6 +239,342 @@
         title_key: 'taskW7SiegePrepTitle',    body_key: 'taskW7SiegePrepBody' },
     ];
 
+    // ============================================================
+    // Season-1 (Crimson Plague) specific tasks — Virus Resistance grind + Stronghold chain + Infinite Octagon.
+    // KB: kb/05-season-1-crimson-plague.md §5, §7, §14, §16.1-16.8
+    // ============================================================
+    var S1_TASKS = [
+      // KB §7 (Stronghold chain rule) — corner landing safest for VR-gated Stronghold captures
+      { id: 's1-d-3-corner',       day_offset: -3, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS1D3CornerTitle',        body_key: 'taskS1D3CornerBody' },
+      // KB §16.3 — Virus Research Institute is the only VR building; L30 = +10,000 VR
+      { id: 's1-d1-vri',           day_offset: 1,  category: 'military', min_hq: 0,
+        title_key: 'taskS1D1VriTitle',           body_key: 'taskS1D1VriBody' },
+      // KB §16.1 — Protein Farm unlocks Day 1 alongside VRI
+      { id: 's1-d1-protein',       day_offset: 1,  category: 'economy',  min_hq: 0,
+        title_key: 'taskS1D1ProteinTitle',       body_key: 'taskS1D1ProteinBody' },
+      // KB §16.1 — L1 Cities open Wk1 D3 with Genetic Recombination event
+      { id: 's1-w1d3-l1-cities',   week: 1, weekday: 3, category: 'event',    min_hq: 0,
+        title_key: 'taskS1W1D3L1CitiesTitle',    body_key: 'taskS1W1D3L1CitiesBody' },
+      // KB §16 — Kimberly Rocket Shadow exclusive weapon (Tier-5 Kimberly gate)
+      { id: 's1-w1d4-kimberly',    week: 1, weekday: 4, category: 'military', min_hq: 0,
+        title_key: 'taskS1W1D4KimberlyTitle',    body_key: 'taskS1W1D4KimberlyBody' },
+      // KB §5, §16.3 — Rally leader VR gate for Stronghold captures
+      { id: 's1-w2-vr-target',     week: 2, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS1W2VrTargetTitle',      body_key: 'taskS1W2VrTargetBody' },
+      // KB §16.1 — L2 Cities Wk2 D3
+      { id: 's1-w2d3-l2-cities',   week: 2, weekday: 3, category: 'event',    min_hq: 0,
+        title_key: 'taskS1W2L2CitiesTitle',      body_key: 'taskS1W2L2CitiesBody' },
+      // KB §16.8 — Corruptor NPC auto-infects regardless of VR
+      { id: 's1-w2-corruptor',     week: 2, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS1W2CorruptorTitle',     body_key: 'taskS1W2CorruptorBody' },
+      // KB §16.1 — Warzone Expedition Wk3 D2 (Day 16)
+      { id: 's1-w3d2-warzone-exp', week: 3, weekday: 2, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS1W3D2WarzoneExpTitle',  body_key: 'taskS1W3D2WarzoneExpBody' },
+      // KB §16.1 — Military Bases open with Warzone Expedition
+      { id: 's1-w3-mil-bases',     week: 3, weekday: 3, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS1W3MilitaryBasesTitle', body_key: 'taskS1W3MilitaryBasesBody' },
+      // KB §16.1, §16.6 — Warzone Declaration mission + Warzone Duel bonus
+      { id: 's1-w4-warzone-decl',  week: 4, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS1W4WarzoneDeclarationTitle', body_key: 'taskS1W4WarzoneDeclarationBody' },
+      // KB §16.1 — City of Apocalypse mission Wk4 D4
+      { id: 's1-w4-capitol',       week: 4, weekday: 4, category: 'event',    min_hq: 0,
+        title_key: 'taskS1W4CityOfApocalypseTitle', body_key: 'taskS1W4CityOfApocalypseBody' },
+      // KB §14 — Builder Alliance opt-out window Wk 4-7
+      { id: 's1-w4-builder-optout',week: 4, weekday: 1, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS1W4BuilderOptoutTitle', body_key: 'taskS1W4BuilderOptoutBody' },
+      // KB §7 — Rain-phase weather applies infection accelerant
+      { id: 's1-w4-rain',          week: 4, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS1W4RainTitle',          body_key: 'taskS1W4RainBody' },
+      // KB §12, §16.7 — Infinite Octagon Wk 5-7 tournament
+      { id: 's1-w5-io-r1',         week: 5, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS1W5InfiniteOctagonR1Title', body_key: 'taskS1W5InfiniteOctagonR1Body' },
+      { id: 's1-w6-io-r2',         week: 6, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS1W6InfiniteOctagonR2Title', body_key: 'taskS1W6InfiniteOctagonR2Body' },
+      { id: 's1-w7-io-r3',         week: 7, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS1W7InfiniteOctagonR3Title', body_key: 'taskS1W7InfiniteOctagonR3Body' },
+      // KB — Season end approaches (Day 48)
+      { id: 's1-w8-season-end',    week: 8, weekday: 1, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS1W8SeasonEndTitle',     body_key: 'taskS1W8SeasonEndBody' },
+    ];
+
+    // ============================================================
+    // Season-3 (Golden Kingdom) specific tasks — Curse Resistance grind + Alliance Center range + Spice War.
+    // KB: kb/07-future-seasons.md §765-870
+    // ============================================================
+    var S3_TASKS = [
+      // KB community meta — save stamina 3 weeks pre-season
+      { id: 's3-pre-stamina',      day_offset: -21, category: 'economy',  min_hq: 0,
+        title_key: 'taskS3PreSaveStaminaTitle',  body_key: 'taskS3PreSaveStaminaBody' },
+      // KB §837-854 — Alliance Center 5x5 anchor; Sandworms teleport out-of-range bases
+      { id: 's3-pre-coords',       day_offset: -3, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS3PreChooseCoordsTitle', body_key: 'taskS3PreChooseCoordsBody' },
+      // KB — Protector's Field L11+ demands Mithril/Sacred Water
+      { id: 's3-d1-pfield',        day_offset: 1,  category: 'economy',  min_hq: 0,
+        title_key: 'taskS3D1ProtectorsFieldTitle', body_key: 'taskS3D1ProtectorsFieldBody' },
+      // KB §790 — CRL L30 unlocks Legendary Hero Badge for Scarlett UR
+      { id: 's3-d1-crl',           day_offset: 1,  category: 'military', min_hq: 0,
+        title_key: 'taskS3D1CrlTitle',           body_key: 'taskS3D1CrlBody' },
+      // KB — Blessing Fountain unlocks Day 1, provides Curse Resistance buff
+      { id: 's3-d1-blessing',      day_offset: 1,  category: 'military', min_hq: 0,
+        title_key: 'taskS3D1BlessingFountainTitle', body_key: 'taskS3D1BlessingFountainBody' },
+      // KB — R4/R5 Day 2 Alliance Center repair
+      { id: 's3-d2-ac-repair',     day_offset: 2,  category: 'spatial',  min_hq: 0,
+        title_key: 'taskS3D2AcRepairTitle',      body_key: 'taskS3D2AcRepairBody' },
+      // KB — Marshall Exclusive Weapon Wk1 D4
+      { id: 's3-w1d4-marshall',    week: 1, weekday: 4, category: 'military', min_hq: 0,
+        title_key: 'taskS3W1D4MarshallTitle',    body_key: 'taskS3W1D4MarshallBody' },
+      // KB — Oasis Project Wk2 D1 (greenification + Archaeology)
+      { id: 's3-w2d1-oasis',       week: 2, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS3W2D1OasisTitle',       body_key: 'taskS3W2D1OasisBody' },
+      // KB — Return of the Dead 19-day event, Tue+Fri 11:30 server
+      { id: 's3-w2-return-dead',   week: 2, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS3W2ReturnDeadTitle',    body_key: 'taskS3W2ReturnDeadBody' },
+      // KB — Hero Swap Event Wk2 D2
+      { id: 's3-w2d2-hero-swap',   week: 2, weekday: 2, category: 'economy',  min_hq: 0,
+        title_key: 'taskS3W2HeroSwapTitle',      body_key: 'taskS3W2HeroSwapBody' },
+      // KB — Faction Awards Wk3 D1 (Scarlet Legion vs Golden Tribe)
+      { id: 's3-w3-factions',      week: 3, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS3W3FactionAwardsTitle', body_key: 'taskS3W3FactionAwardsBody' },
+      // KB §790 — Scarlett UR promotion opens Wk3 D1
+      { id: 's3-w3-scarlett-ur',   week: 3, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS3W3ScarlettUrTitle',    body_key: 'taskS3W3ScarlettUrBody' },
+      // KB — Schuyler Exclusive Weapon Wk3 D4
+      { id: 's3-w3d4-schuyler',    week: 3, weekday: 4, category: 'military', min_hq: 0,
+        title_key: 'taskS3W3SchuylerTitle',      body_key: 'taskS3W3SchuylerBody' },
+      // KB §807-820 — Spice Wars begin Wk4 D1
+      { id: 's3-w4-spice-war',     week: 4, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS3W4SpiceWarOpenTitle',  body_key: 'taskS3W4SpiceWarOpenBody' },
+      // KB — Pyramid War Wk4 D6
+      { id: 's3-w4d6-pyramid',     week: 4, weekday: 6, category: 'event',    min_hq: 0,
+        title_key: 'taskS3W4PyramidWarTitle',    body_key: 'taskS3W4PyramidWarBody' },
+      // KB — Oasis free-expansion transition Wk5
+      { id: 's3-w5-oasis-free',    week: 5, weekday: 1, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS3W5OasisFreeTitle',     body_key: 'taskS3W5OasisFreeBody' },
+      // KB — McGregor Exclusive Weapon Wk6
+      { id: 's3-w6-mcgregor',      week: 6, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS3W6McGregorTitle',      body_key: 'taskS3W6McGregorBody' },
+      // KB — Faction Duel Wk7 D1-6
+      { id: 's3-w7-faction-duel',  week: 7, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS3W7FactionDuelTitle',   body_key: 'taskS3W7FactionDuelBody' },
+      // KB — Capitol War Wk7 D7 (Sun 12:00 server)
+      { id: 's3-w7d7-capitol-war', week: 7, weekday: 7, category: 'event',    min_hq: 0,
+        title_key: 'taskS3W7CapitolWarTitle',    body_key: 'taskS3W7CapitolWarBody' },
+      // KB — Final Spice War rounds Wk8
+      { id: 's3-w8-final-spice',   week: 8, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS3W8FinalSpiceTitle',    body_key: 'taskS3W8FinalSpiceBody' },
+      // KB §822-835 — Desert Protector budgeting (top-cited waste)
+      { id: 's3-w4-protectors',    week: 4, weekday: 1, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS3W4ProtectorBudgetTitle', body_key: 'taskS3W4ProtectorBudgetBody' },
+    ];
+
+    // ============================================================
+    // Season-4 (Evernight Isle) specific tasks — Optoelectronic Lab + Lighthouse + Blood Night + Copper Wars.
+    // KB: kb/07-future-seasons.md §99-222
+    // ============================================================
+    var S4_TASKS = [
+      // KB §212 — AC 11-tile spacing rule
+      { id: 's4-pre-coords',       day_offset: -3, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS4PreChooseCoordsTitle', body_key: 'taskS4PreChooseCoordsBody' },
+      // KB §153-158 — Optoelectronic Lab (S4 VR building)
+      { id: 's4-d1-opto-lab',      day_offset: 1,  category: 'military', min_hq: 0,
+        title_key: 'taskS4D1OptoLabTitle',       body_key: 'taskS4D1OptoLabBody' },
+      // KB §153-158 — Lighthouse brightness bonuses by level
+      { id: 's4-d1-lighthouse',    day_offset: 1,  category: 'spatial',  min_hq: 0,
+        title_key: 'taskS4D1LighthouseTitle',    body_key: 'taskS4D1LighthouseBody' },
+      // KB §177-188 — Blood Night Stage 1 Wk1
+      { id: 's4-w1-blood-night',   week: 1, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS4W1BloodNightTitle',    body_key: 'taskS4W1BloodNightBody' },
+      // KB — Lucius Exclusive Weapon Wk1
+      { id: 's4-w1-lucius',        week: 1, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS4W1LuciusTitle',        body_key: 'taskS4W1LuciusBody' },
+      // KB §177-188 — Blood Night Stage 2 Wk2
+      { id: 's4-w2-blood-night-2', week: 2, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS4W2BloodNight2Title',   body_key: 'taskS4W2BloodNight2Body' },
+      // KB — Blood Night Hunter PvP mode Wk2
+      { id: 's4-w2-hunter',        week: 2, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS4W2HunterTitle',        body_key: 'taskS4W2HunterBody' },
+      // KB — Divine Tree Fortune Slip system Wk2
+      { id: 's4-w2-divine-tree',   week: 2, weekday: 1, category: 'economy',  min_hq: 0,
+        title_key: 'taskS4W2DivineTreeTitle',    body_key: 'taskS4W2DivineTreeBody' },
+      // KB §198-208 — Sarah UR promotion Wk3 D1
+      { id: 's4-w3-sarah-ur',      week: 3, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS4W3SarahUrTitle',       body_key: 'taskS4W3SarahUrBody' },
+      // KB §198-208 — Trade Posts Wk3 D2
+      { id: 's4-w3-trade-posts',   week: 3, weekday: 2, category: 'event',    min_hq: 0,
+        title_key: 'taskS4W3TradePostsTitle',    body_key: 'taskS4W3TradePostsBody' },
+      // KB §198-208 — L5 cities Wk3 D3
+      { id: 's4-w3d3-l5',          week: 3, weekday: 3, category: 'event',    min_hq: 0,
+        title_key: 'taskS4W3L5CitiesTitle',      body_key: 'taskS4W3L5CitiesBody' },
+      // KB — Adam Exclusive Weapon Wk3 D4
+      { id: 's4-w3d4-adam',        week: 3, weekday: 4, category: 'military', min_hq: 0,
+        title_key: 'taskS4W3AdamTitle',          body_key: 'taskS4W3AdamBody' },
+      // KB §198-208 — L6 cities Wk3 D6
+      { id: 's4-w3d6-l6',          week: 3, weekday: 6, category: 'event',    min_hq: 0,
+        title_key: 'taskS4W3L6CitiesTitle',      body_key: 'taskS4W3L6CitiesBody' },
+      // KB §177-188 — Blood Night Stage 3 W3-W7
+      { id: 's4-w3-blood-night-3', week: 3, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS4W3BloodNight3Title',   body_key: 'taskS4W3BloodNight3Body' },
+      // KB — Hunting Oni warzone-wide event
+      { id: 's4-w3-hunting-oni',   week: 3, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS4W3HuntingOniTitle',    body_key: 'taskS4W3HuntingOniBody' },
+      // KB §189-196 — Copper Wars round 1 Wk4
+      { id: 's4-w4-copper-r1',     week: 4, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS4W4CopperWarR1Title',   body_key: 'taskS4W4CopperWarR1Body' },
+      // KB §189-196 — Copper War 15% plunder cap correction
+      { id: 's4-w4-copper-cap',    week: 4, weekday: 1, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS4W4CopperCapTitle',     body_key: 'taskS4W4CopperCapBody' },
+      // KB — Williams Exclusive Weapon Wk6
+      { id: 's4-w6-williams',      week: 6, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS4W6WilliamsTitle',      body_key: 'taskS4W6WilliamsBody' },
+      // KB — Copper Ranking narrows to 3 alliances Wk7
+      { id: 's4-w7-copper-narrow', week: 7, weekday: 1, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS4W7CopperNarrowTitle',  body_key: 'taskS4W7CopperNarrowBody' },
+      // KB §177-188 — Blood Night Stage 4 Wk8 (Holy Mountain)
+      { id: 's4-w8-holy-mountain', week: 8, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS4W8HolyMountainTitle',  body_key: 'taskS4W8HolyMountainBody' },
+      // KB §214-222 — Transfer Surge Wk8 D1
+      { id: 's4-w8-transfer',      week: 8, weekday: 1, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS4W8TransferSurgeTitle', body_key: 'taskS4W8TransferSurgeBody' },
+      // KB §214-222 — T11 unlock in celebration week
+      { id: 's4-w8-t11',           week: 8, weekday: 1, category: 'military', min_hq: 27,
+        title_key: 'taskS4W8T11Title',           body_key: 'taskS4W8T11Body' },
+    ];
+
+    // ============================================================
+    // Season-5 (Wild West) specific tasks — Bank Strongholds + CrystalGold + Alliance Safe Time + 3 war slots.
+    // KB: kb/07-future-seasons.md §226-273
+    // ============================================================
+    var S5_TASKS = [
+      // KB §269-273 — Gold Prospecting mini-game
+      { id: 's5-pre-prospecting',  day_offset: -10, category: 'event',    min_hq: 0,
+        title_key: 'taskS5PreGoldProspectingTitle', body_key: 'taskS5PreGoldProspectingBody' },
+      // KB §269-273 — Area Selection
+      { id: 's5-pre-area',         day_offset: -7,  category: 'spatial',  min_hq: 0,
+        title_key: 'taskS5PreAreaSelectionTitle', body_key: 'taskS5PreAreaSelectionBody' },
+      // KB §269-273 — Capitol Conquest pre-season
+      { id: 's5-pre-capitol',      day_offset: -3,  category: 'event',    min_hq: 0,
+        title_key: 'taskS5PreCapitolConquestTitle', body_key: 'taskS5PreCapitolConquestBody' },
+      // KB §250-253 — R5 sets Alliance Safe Time (disables 1 of 3 daily war slots)
+      { id: 's5-d1-safe-time',     day_offset: 1, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS5D1SafeTimeTitle',      body_key: 'taskS5D1SafeTimeBody' },
+      // KB — Caffeine Institute (S5 VR building)
+      { id: 's5-d1-caffeine',      day_offset: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS5D1CaffeineTitle',      body_key: 'taskS5D1CaffeineBody' },
+      // KB — Coffee Factory
+      { id: 's5-d1-coffee',        day_offset: 1, category: 'economy',  min_hq: 0,
+        title_key: 'taskS5D1CoffeeFactoryTitle', body_key: 'taskS5D1CoffeeFactoryBody' },
+      // KB — Tycoon's Mansion HQ skin
+      { id: 's5-d1-tycoon',        day_offset: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS5D1TycoonSkinTitle',    body_key: 'taskS5D1TycoonSkinBody' },
+      // KB §241-246 — Bank Strongholds L1-6 Wk1
+      { id: 's5-w1-bank-l1',       week: 1, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS5W1BankL1Title',        body_key: 'taskS5W1BankL1Body' },
+      // KB §266 — Fiona Exclusive Weapon Wk1
+      { id: 's5-w1-fiona',         week: 1, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS5W1FionaTitle',         body_key: 'taskS5W1FionaBody' },
+      // KB — CrystalGold deposits Wk1
+      { id: 's5-w1-crystalgold',   week: 1, weekday: 1, category: 'economy',  min_hq: 0,
+        title_key: 'taskS5W1CrystalGoldTitle',   body_key: 'taskS5W1CrystalGoldBody' },
+      // KB — Trade Train Wk2
+      { id: 's5-w2-trade-train',   week: 2, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS5W2TradeTrainTitle',    body_key: 'taskS5W2TradeTrainBody' },
+      // KB — High Noon Wk3 CrystalGold cap
+      { id: 's5-w3-high-noon',     week: 3, weekday: 1, category: 'economy',  min_hq: 0,
+        title_key: 'taskS5W3HighNoonTitle',      body_key: 'taskS5W3HighNoonBody' },
+      // KB §266 — Stetmann Exclusive Weapon Wk3
+      { id: 's5-w3-stetmann',      week: 3, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS5W3StetmannTitle',      body_key: 'taskS5W3StetmannBody' },
+      // KB §241-246 — Bank Strongholds L7-10 Wk4 (39,900 VR needed for L10)
+      { id: 's5-w4-bank-l7',       week: 4, weekday: 1, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS5W4BankL7Title',        body_key: 'taskS5W4BankL7Body' },
+      // KB §241-246 — Bank holdings cap grow with cities
+      { id: 's5-w4-bank-cap',      week: 4, weekday: 1, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS5W4BankCapTitle',       body_key: 'taskS5W4BankCapBody' },
+      // KB — Venom UR + retro UR paths Wk4
+      { id: 's5-w4-venom-ur',      week: 4, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS5W4VenomUrTitle',       body_key: 'taskS5W4VenomUrBody' },
+      // KB §266 — Morrison Exclusive Weapon Wk6
+      { id: 's5-w6-morrison',      week: 6, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS5W6MorrisonTitle',      body_key: 'taskS5W6MorrisonBody' },
+      // KB §250-253 — City capture Wed+Sat only (4/week max)
+      { id: 's5-w7-city-cap',      week: 7, weekday: 1, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS5W7CityCapTitle',       body_key: 'taskS5W7CityCapBody' },
+      // KB — Final war day Wk8 Sat
+      { id: 's5-w8-final-war',     week: 8, weekday: 6, category: 'event',    min_hq: 0,
+        title_key: 'taskS5W8FinalWarTitle',      body_key: 'taskS5W8FinalWarBody' },
+      // KB §250-253 — Sunday Truce every week
+      { id: 's5-sunday-truce',     week: 1, weekday: 7, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS5SundayTruceTitle',     body_key: 'taskS5SundayTruceBody' },
+    ];
+
+    // ============================================================
+    // Season-6 (Shadow Rainforest) specific tasks — factions + permanent city destruction + Hero Awakening + Altars.
+    // KB: kb/07-future-seasons.md §277-360
+    // ============================================================
+    var S6_TASKS = [
+      // KB §285-292 — Faction assignment (Deepwood vs Wetland coin toss)
+      { id: 's6-pre-faction',      day_offset: -7, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS6PreFactionTitle',      body_key: 'taskS6PreFactionBody' },
+      // KB §299-311 — Alliance leadership role → Altar skill lock
+      { id: 's6-pre-role',         day_offset: -3, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS6PreRoleTitle',         body_key: 'taskS6PreRoleBody' },
+      // KB — Fungus Institute (S6 VR building)
+      { id: 's6-d1-fungus',        day_offset: 1,  category: 'military', min_hq: 0,
+        title_key: 'taskS6D1FungusTitle',        body_key: 'taskS6D1FungusBody' },
+      // KB — Spore Factory
+      { id: 's6-d1-spore',         day_offset: 1,  category: 'economy',  min_hq: 0,
+        title_key: 'taskS6D1SporeFactoryTitle',  body_key: 'taskS6D1SporeFactoryBody' },
+      // KB §294-297 — PERMANENT City Destruction warning
+      { id: 's6-d1-city-destr',    day_offset: 1,  category: 'spatial',  min_hq: 0,
+        title_key: 'taskS6D1CityDestructionTitle', body_key: 'taskS6D1CityDestructionBody' },
+      // KB §313-333 — Kimberly Awakening Wk1
+      { id: 's6-w1-kimberly-awk',  week: 1, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS6W1KimberlyAwakeningTitle', body_key: 'taskS6W1KimberlyAwakeningBody' },
+      // KB §346-348 — Beneath the Ruins Solo Wk1 D2
+      { id: 's6-w1d2-beneath-solo',week: 1, weekday: 2, category: 'event',    min_hq: 0,
+        title_key: 'taskS6W1BeneathSoloTitle',   body_key: 'taskS6W1BeneathSoloBody' },
+      // KB §346-348 — Beneath the Ruins Duel Wk2
+      { id: 's6-w2-beneath-duel',  week: 2, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS6W2BeneathDuelTitle',   body_key: 'taskS6W2BeneathDuelBody' },
+      // KB §299-311 — Altars open Wk2 D2 (Tue only)
+      { id: 's6-w2d2-altars',      week: 2, weekday: 2, category: 'event',    min_hq: 0,
+        title_key: 'taskS6W2AltarsOpenTitle',    body_key: 'taskS6W2AltarsOpenBody' },
+      // KB §349 — Global Expedition R1 Wk2 (14 days)
+      { id: 's6-w2-ge-r1',         week: 2, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS6W2GeR1Title',          body_key: 'taskS6W2GeR1Body' },
+      // KB §338 — Alliance Pact system Wk2
+      { id: 's6-w2-alliance-pact', week: 2, weekday: 1, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS6W2AlliancePactTitle',  body_key: 'taskS6W2AlliancePactBody' },
+      // KB §313-333 — D.Va Awakening Wk3
+      { id: 's6-w3-dva-awk',       week: 3, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS6W3DvaAwakeningTitle',  body_key: 'taskS6W3DvaAwakeningBody' },
+      // KB §349 — Global Expedition R2 Wk4
+      { id: 's6-w4-ge-r2',         week: 4, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS6W4GeR2Title',          body_key: 'taskS6W4GeR2Body' },
+      // KB — Faction Technology tree Wk4
+      { id: 's6-w4-faction-tech',  week: 4, weekday: 1, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS6W4FactionTechTitle',   body_key: 'taskS6W4FactionTechBody' },
+      // KB §313-333 — Tesla Awakening Wk6 (corrected from Wk5)
+      { id: 's6-w6-tesla-awk',     week: 6, weekday: 1, category: 'military', min_hq: 0,
+        title_key: 'taskS6W6TeslaAwakeningTitle', body_key: 'taskS6W6TeslaAwakeningBody' },
+      // KB §349 — Global Expedition R3 Wk6
+      { id: 's6-w6-ge-r3',         week: 6, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS6W6GeR3Title',          body_key: 'taskS6W6GeR3Body' },
+      // KB §359 — Ancestral Temple / Faction Duel Finale Wk7
+      { id: 's6-w7-ancestral',     week: 7, weekday: 1, category: 'event',    min_hq: 0,
+        title_key: 'taskS6W7AncestralTitle',     body_key: 'taskS6W7AncestralBody' },
+      // KB §359 — Wk7 positioning lockout
+      { id: 's6-w7-locked',        week: 7, weekday: 1, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS6W7LockedTitle',        body_key: 'taskS6W7LockedBody' },
+      // KB §343 — Sanctuary timer doubled
+      { id: 's6-sanctuary-nerf',   week: 1, weekday: 1, category: 'spatial',  min_hq: 0,
+        title_key: 'taskS6SanctuaryNerfTitle',   body_key: 'taskS6SanctuaryNerfBody' },
+      // KB §335 — Awakening Bundles permanently removed
+      { id: 's6-awk-shards',       week: 1, weekday: 1, category: 'economy',  min_hq: 0,
+        title_key: 'taskS6AwakeningShardsTitle', body_key: 'taskS6AwakeningShardsBody' },
+    ];
+
     // Map milestone.event → category (best-effort, defaults to 'event').
     function categoryForMilestone(m) {
       var e = (m.event || '').toLowerCase();
@@ -253,9 +591,21 @@
       var out = UNIVERSAL_TASKS.slice();
 
       var sid = season && season.id;
-      if (sid === 's2-polar-storm') {
+      // Per-season branches — each adds prep + in-season tasks not covered by milestone rows.
+      // S7 intentionally omitted — placeholder-only season with no confirmed mechanics as of 2026-07-15.
+      if (sid === 's1-crimson-plague') {
+        S1_TASKS.forEach(function (t) { out.push(t); });
+      } else if (sid === 's2-polar-storm') {
         // Merge S2-specific Day-1 + in-season tasks that don't come from milestones.
         S2_TASKS.forEach(function (t) { out.push(t); });
+      } else if (sid === 's3-golden-kingdom') {
+        S3_TASKS.forEach(function (t) { out.push(t); });
+      } else if (sid === 's4-evernight-isle') {
+        S4_TASKS.forEach(function (t) { out.push(t); });
+      } else if (sid === 's5-wild-west') {
+        S5_TASKS.forEach(function (t) { out.push(t); });
+      } else if (sid === 's6-shadow-rainforest') {
+        S6_TASKS.forEach(function (t) { out.push(t); });
       }
 
       // Add milestones tagged with 'season_timeline' as in-season event rows.
