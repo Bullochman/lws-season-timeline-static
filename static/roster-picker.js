@@ -115,10 +115,154 @@
     } catch (e) { return null; }
   }
 
+  // ── Live-roster preferred loader (v0.5) ────────────────────────────────
+  // If the URL hash carries #alliance_sig=X OR localStorage has
+  // `lws_last_alliance_sig`, fetch the current alliance-editable roster from
+  // roster.r5tools.io and use that instead of the CSV preset. Responses are
+  // cached in localStorage for 5 min per signature to avoid repeated fetches
+  // when the user reloads the page.
+  var LIVE_ROSTER_ORIGIN = 'https://roster.r5tools.io';
+  var LIVE_CACHE_TTL_MS = 5 * 60 * 1000;
+
+  function _sigFromHashOrStorage() {
+    try {
+      var h = window.location.hash || '';
+      if (h.indexOf('alliance_sig=') !== -1) {
+        var params = {};
+        h.replace(/^#/, '').split('&').forEach(function (kv) {
+          var eq = kv.indexOf('=');
+          if (eq === -1) return;
+          params[kv.slice(0, eq)] = decodeURIComponent(kv.slice(eq + 1));
+        });
+        if (params.alliance_sig && /^[a-f0-9]{4,32}$/.test(params.alliance_sig)) {
+          try { localStorage.setItem('lws_last_alliance_sig', params.alliance_sig); } catch (e) {}
+          return params.alliance_sig;
+        }
+      }
+      var stored = localStorage.getItem('lws_last_alliance_sig');
+      if (stored && /^[a-f0-9]{4,32}$/.test(stored)) return stored;
+    } catch (e) {}
+    return null;
+  }
+
+  function _cachedLiveRoster(sig) {
+    try {
+      var raw = localStorage.getItem('lws_live_roster_cache_' + sig);
+      if (!raw) return null;
+      var entry = JSON.parse(raw);
+      if (!entry || !entry.fetched_at) return null;
+      if (Date.now() - entry.fetched_at > LIVE_CACHE_TTL_MS) return null;
+      return entry.data;
+    } catch (e) { return null; }
+  }
+
+  function _cacheLiveRoster(sig, data) {
+    try {
+      localStorage.setItem('lws_live_roster_cache_' + sig, JSON.stringify({
+        fetched_at: Date.now(), data: data,
+      }));
+    } catch (e) {}
+  }
+
+  function _humanRelTime(iso) {
+    if (!iso) return '';
+    var then = new Date(iso).getTime();
+    if (!isFinite(then)) return '';
+    var diff = Math.max(0, (Date.now() - then) / 1000);
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return Math.round(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.round(diff / 3600) + 'h ago';
+    return Math.round(diff / 86400) + 'd ago';
+  }
+
+  function _dispatchLive(members, meta) {
+    var rows = members.map(function (m) {
+      return {
+        rank:  String(m.rank || 'R1').toUpperCase(),
+        name:  String(m.name || ''),
+        hq:    m.hq == null ? '' : String(m.hq),
+        power: String(m.power || ''),
+        notes: String(m.notes || ''),
+      };
+    });
+    var name = meta.alliance_name || ('Live Roster · ' + meta.alliance_signature);
+    if (typeof window.__lwsRosterLoaded === 'function') {
+      window.__lwsRosterLoaded(rows, name);
+    }
+    window.dispatchEvent(new CustomEvent('lws:roster-loaded', {
+      detail: { rows: rows, name: name, source: 'live-roster',
+                alliance_signature: meta.alliance_signature,
+                last_edited_at: meta.last_edited_at,
+                last_edited_by: meta.last_edited_by,
+                edit_count: meta.edit_count },
+    }));
+    // Banner
+    try {
+      var banner = document.createElement('div');
+      banner.style.cssText = 'padding:10px 14px;margin:8px 0;background:rgba(138,224,163,0.10);border:1px solid rgba(138,224,163,0.35);border-radius:6px;color:#8ae0a3;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:8px';
+      var edited = meta.last_edited_at
+        ? ('last edited ' + _humanRelTime(meta.last_edited_at) + (meta.last_edited_by ? (' by ' + String(meta.last_edited_by).replace(/</g, '&lt;')) : ''))
+        : 'seeded from snapshot';
+      banner.innerHTML = '<span>🔄 Loaded <strong>live roster</strong> — ' + rows.length + ' members · ' + edited + '</span>'
+        + '<a href="https://roster.r5tools.io/#live" target="_blank" rel="noopener" style="color:#8ae0a3;border:1px solid rgba(138,224,163,0.35);padding:4px 10px;border-radius:4px;font-size:12px;text-decoration:none">Edit ↗</a>';
+      var mount = document.getElementById('lws-roster-picker');
+      if (mount) mount.parentNode.insertBefore(banner, mount);
+      else document.body.insertBefore(banner, document.body.firstChild);
+    } catch (e) {}
+  }
+
+  function tryLoadFromLiveRoster() {
+    var sig = _sigFromHashOrStorage();
+    if (!sig) return null;
+    // Serve cached response synchronously first; refresh in the background.
+    var cached = _cachedLiveRoster(sig);
+    var status = document.getElementById('lws-roster-status');
+    if (status) status.textContent = 'loading live roster…';
+    if (cached && cached.members && cached.members.length) {
+      _dispatchLive(cached.members, {
+        alliance_signature: sig,
+        alliance_name:      cached.alliance_name,
+        last_edited_at:     cached.last_edited_at,
+        last_edited_by:     cached.last_edited_by,
+        edit_count:         cached.edit_count,
+      });
+    }
+    // Refresh from network (returns a Promise but we don't block on it).
+    fetch(LIVE_ROSTER_ORIGIN + '/api/live-roster?sig=' + encodeURIComponent(sig))
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data || !data.members || !data.members.length) {
+          if (!cached && status) status.textContent = 'no live roster; falling back to preset';
+          return;
+        }
+        _cacheLiveRoster(sig, data);
+        // Only dispatch a second time if the network response differs from what
+        // we already rendered from cache — avoids flashing the banner twice.
+        var cachedCount = (cached && cached.members) ? cached.members.length : -1;
+        if (cachedCount !== data.members.length
+            || (cached && cached.last_edited_at) !== data.last_edited_at) {
+          _dispatchLive(data.members, {
+            alliance_signature: sig,
+            alliance_name:      data.alliance_name,
+            last_edited_at:     data.last_edited_at,
+            last_edited_by:     data.last_edited_by,
+            edit_count:         data.edit_count,
+          });
+        }
+      })
+      .catch(function () { /* silent; presets still load if this fails */ });
+    // Return truthy if we already had a cached copy — caller uses this to skip
+    // default-preset autoload. If no cache but network is inflight, still
+    // return truthy so we don't stomp the live roster with a preset.
+    return true;
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var mount = document.getElementById('lws-roster-picker');
     if (mount) render(mount);
-    // Priority order: hash > autoload marker > picker mounted → default roster
+    // Priority order: live roster (hash/localStorage) > hash CSV > autoload
+    // marker > picker mounted → default roster.
+    if (tryLoadFromLiveRoster()) return;
     if (tryLoadFromHash()) return;
     var auto = document.querySelector('[data-lws-roster-autoload]');
     if (auto || document.getElementById('lws-roster-picker')) {
