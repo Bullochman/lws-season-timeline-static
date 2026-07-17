@@ -392,8 +392,26 @@ input[type="checkbox"] { width: auto; }
 
 /* ---- responsive ---- */
 
+/* injected roster + timeline tables need horizontal scroll on mobile */
+#rosterBody, .tl-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 @media (max-width: 720px) {
   .form-row { grid-template-columns: 1fr; }
   .countdown-value { font-size: 32px; }
   .tl-day { width: auto; }
+}
+
+@media (max-width: 520px) {
+  body { padding: 12px 8px; }
+  .roster-table, .tl-table { font-size: 11px; min-width: 320px; }
+  .roster-table th, .roster-table td,
+  .tl-table th, .tl-table td { padding: 4px 6px; }
+  h1 { font-size: clamp(20px, 5.5vw, 28px); }
+  h2 { font-size: clamp(16px, 4.5vw, 22px); }
+  .countdown-value { font-size: 26px; }
+  .panel { padding: 12px 10px; }
+  .form-actions button { font-size: 12px; padding: 6px 10px; }
 }
