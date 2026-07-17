@@ -7,6 +7,7 @@
   <meta name="description" content="T-minus countdown to Season 2 launch + prep checklist for the whole alliance. Part of the Last War: Survival tool suite." />
   <link rel="stylesheet" href="static/styles.css" />
   <script src="static/lws-countdown.js" defer></script>
+  <script defer src="static/lws-track.js"></script>
 </head>
 <body>
 <!-- suite-nav (part of R5TOOLS.IO) -->
@@ -150,7 +151,7 @@
     // Production: point at the deployed access-codes subdomain.
     // window.LWS_ACCESS_CODES_BASE_URL = 'https://access-codes.r5tools.io';
   </script>
-  <script src="https://access-codes.r5tools.io/lib.js" onerror="console.warn('[LWS] access-codes lib unreachable — running in ungated dev mode')"></script>
+  <script src="https://access-codes.r5tools.io/lib.js?v=2" onerror="console.warn('[LWS] access-codes lib unreachable — running in ungated dev mode')"></script>
   <script>
     if (window.LWSAccessCodes && typeof window.LWSAccessCodes.gate === 'function') {
       window.LWSAccessCodes.gate('main-app');
