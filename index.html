@@ -127,7 +127,7 @@
       <div class="panel">
         <h2 data-i18n="exportHeading">Export</h2>
         <div class="export-row">
-          <button id="exportPngBtn" data-i18n="exportPng">PNG (Discord)</button>
+          <button id="exportPngBtn" data-i18n="exportPng">PNG (Discord)</button><span id="lws-discord-slot" style="display:inline-block;margin-left:6px"></span><span id="lws-discord-gear-slot" style="display:inline-block;margin-left:4px"></span>
           <button id="exportIcalBtn" data-i18n="exportIcal">iCal (.ics)</button>
           <button id="exportCsvBtn" data-i18n="exportCsv">CSV</button>
           <button id="exportJsonBtn" data-i18n="exportJson">JSON</button>
@@ -158,6 +158,7 @@
 
   <!-- ---- i18n ---- -->
   <script src="static/i18n.js"></script>
+  <script src="static/lws-discord.js" defer></script>
 
   <!-- ---- app ---- -->
   <script>
@@ -1432,5 +1433,6 @@
 
   <script src="static/seasons-lib.js" defer></script>
   <script src="https://chat.r5tools.io/widget.js" defer></script>
+<script>window.addEventListener("DOMContentLoaded",function(){if(window.LWSDiscord&&typeof LWSDiscord.attachToButton==="function"){setTimeout(function(){LWSDiscord.attachToButton({pngBtnId:"exportPngBtn",slotId:"lws-discord-slot",gearSlotId:"lws-discord-gear-slot",filename:"season-timeline.png",contextText:"Season Timeline",toolName:"Season Timeline"});},300);}});</script>
 </body>
 </html>
