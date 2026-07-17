@@ -32,6 +32,35 @@
   var USERNAME = 'R5TOOLS.IO';
   var AVATAR = 'https://r5tools.io/apple-touch-icon.png';
   var FOOTER = ' · made with r5tools.io';
+  var CENTRAL_API = 'https://access-codes.r5tools.io/api/webhook';
+
+  // On any r5tools.io subdomain the lws_unlock_code cookie is auto-sent
+  // to the central API — the R5 sets the webhook once and every tool at
+  // hive/roster/landing picks it up. bullochman.github.io tools can't send
+  // the cookie (different registrable domain), so they stay localStorage-only.
+  async function syncFromCentral() {
+    try {
+      var resp = await fetch(CENTRAL_API, { method: 'GET', credentials: 'include' });
+      if (!resp.ok) return null;
+      var d = await resp.json();
+      var url = d && d.webhook_url;
+      if (url && isValidWebhookUrl(url)) {
+        try { localStorage.setItem(STORAGE_KEY, url); } catch (e) {}
+        return url;
+      }
+      return null;
+    } catch (e) { return null; }
+  }
+  async function pushToCentral(url) {
+    try {
+      var resp = await fetch(CENTRAL_API, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ webhook_url: url || '' }),
+      });
+      return resp.ok;
+    } catch (e) { return false; }
+  }
 
   // ---------- storage ----------
   function getWebhook() {
@@ -42,8 +71,11 @@
     try {
       if (url) localStorage.setItem(STORAGE_KEY, url);
       else localStorage.removeItem(STORAGE_KEY);
-      return true;
-    } catch (e) { return false; }
+    } catch (e) { /* quota */ }
+    // Fire and forget — the central store keeps sibling tools in sync.
+    // Non-blocking on save, non-fatal if central is unreachable.
+    pushToCentral(url).catch(function () {});
+    return true;
   }
   function isValidWebhookUrl(url) {
     if (!url || typeof url !== 'string') return false;
@@ -320,6 +352,12 @@
     return postBtn;
   }
 
+  // Bootstrap: on any r5tools.io subdomain, kick off a background sync from
+  // central so tools reflect changes made in other tools quickly.
+  if (typeof window !== 'undefined' && /\.r5tools\.io$/i.test(window.location.hostname || '')) {
+    syncFromCentral().catch(function () {});
+  }
+
   global.LWSDiscord = {
     getWebhook: getWebhook,
     setWebhook: setWebhook,
@@ -329,5 +367,7 @@
     renderSettingsButton: renderSettingsButton,
     renderPostButton: renderPostButton,
     attachToButton: attachToButton,
+    syncFromCentral: syncFromCentral,
+    pushToCentral: pushToCentral,
   };
 })(window);
