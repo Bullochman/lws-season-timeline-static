@@ -26,7 +26,8 @@
 (function () {
   'use strict';
 
-  var CDN_BASE = window.LWS_SEASONS_URL || 'https://seasons.r5tools.io';
+  // Local same-origin data/ is tried first — set window.LWS_SEASONS_URL to opt in to a remote CDN.
+  var CDN_BASE = window.LWS_SEASONS_URL || null;
   var LS_KEY_WARZONE = 'lws_current_warzone';
   var LS_KEY_OVERRIDE = 'lws_season_override';
 
@@ -44,9 +45,12 @@
     if (cache.seasons && cache.warzones && (Date.now() - cache.loadedAt) < CACHE_TTL_MS) {
       return Promise.resolve(cache);
     }
+    // Prefer local same-origin fetches; only hit the CDN when it's been explicitly set.
+    var seasonsUrl  = CDN_BASE ? CDN_BASE + '/seasons.json'  : 'data/seasons.json';
+    var warzonesUrl = CDN_BASE ? CDN_BASE + '/warzones.json' : 'data/warzones.json';
     return Promise.all([
-      loadJson(CDN_BASE + '/seasons.json').catch(function () { return loadJson('data/seasons.json'); }),
-      loadJson(CDN_BASE + '/warzones.json').catch(function () { return loadJson('data/warzones.json'); })
+      loadJson(seasonsUrl).catch(function () { return loadJson('data/seasons.json'); }),
+      loadJson(warzonesUrl).catch(function () { return loadJson('data/warzones.json'); })
     ]).then(function (r) {
       cache.seasons = r[0]; cache.warzones = r[1]; cache.loadedAt = Date.now();
       return cache;
@@ -164,6 +168,41 @@
 
   // ---- Warzone / season selector UI ---------------------------------------
 
+  // Language-aware string helpers.  Reads either `lws_lang` in localStorage
+  // (set by any of the sibling tools' langToggle) or falls back to navigator.
+  function getLang() {
+    try {
+      var stored = localStorage.getItem('lws_lang');
+      if (stored) return stored;
+    } catch (e) { /* private mode */ }
+    return (navigator.language || 'en').toLowerCase().startsWith('ko') ? 'ko' : 'en';
+  }
+  var SELECTOR_STRINGS = {
+    en: {
+      warzoneLabel: 'Warzone:',
+      warzonePlaceholder: 'e.g. 2007',
+      wkAbbr: 'Wk',
+      overrideNote: '(override)',
+      change: 'change',
+      promptSeason: 'Set season (options: {opts})',
+      promptWeek: 'Set week (1-8)'
+    },
+    ko: {
+      warzoneLabel: '워존:',
+      warzonePlaceholder: '예: 2007',
+      wkAbbr: '주',
+      overrideNote: '(수동 설정)',
+      change: '변경',
+      promptSeason: '시즌 설정 (선택지: {opts})',
+      promptWeek: '주차 설정 (1-8)'
+    }
+  };
+  function T(key) {
+    var lang = getLang();
+    var dict = SELECTOR_STRINGS[lang] || SELECTOR_STRINGS.en;
+    return dict[key] || SELECTOR_STRINGS.en[key] || key;
+  }
+
   function renderWarzoneSelector(mount, opts) {
     opts = opts || {};
     return loadAll().then(function (data) {
@@ -172,13 +211,13 @@
       wrap.style.cssText = 'display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;color:#a8b0c0';
 
       var label = document.createElement('label');
-      label.textContent = opts.labelText || 'Warzone:';
+      label.textContent = opts.labelText || T('warzoneLabel');
       label.style.color = '#7a8290';
 
       var input = document.createElement('input');
       input.type = 'text';
       input.value = current;
-      input.placeholder = 'e.g. 2007';
+      input.placeholder = T('warzonePlaceholder');
       input.style.cssText = 'width:80px;padding:4px 8px;background:#0d1424;color:#eee;border:1px solid #2a3444;border-radius:4px;font-family:ui-monospace,monospace;font-size:13px';
       input.addEventListener('change', function () {
         setStoredWarzone(input.value.trim());
@@ -193,8 +232,9 @@
 
       function refreshBadge() {
         resolveContext().then(function (ctx) {
-          var seasonName = (ctx.season && ctx.season.name && ctx.season.name.en) || ctx.season_id;
-          seasonBadge.textContent = seasonName + ' · Wk ' + ctx.week + (ctx.is_override ? ' (override)' : '');
+          var lang = getLang();
+          var seasonName = (ctx.season && ctx.season.name && (ctx.season.name[lang] || ctx.season.name.en)) || ctx.season_id;
+          seasonBadge.textContent = seasonName + ' · ' + T('wkAbbr') + ' ' + ctx.week + (ctx.is_override ? ' ' + T('overrideNote') : '');
         });
       }
       refreshBadge();
@@ -206,18 +246,18 @@
       if (opts.showOverrideLink !== false) {
         var overrideBtn = document.createElement('a');
         overrideBtn.href = '#';
-        overrideBtn.textContent = 'change';
+        overrideBtn.textContent = T('change');
         overrideBtn.style.cssText = 'color:#c9a961;text-decoration:none;font-size:11px;margin-left:4px';
         overrideBtn.addEventListener('click', function (e) {
           e.preventDefault();
           var opts_list = data.warzones.season_id_options || Object.keys(data.seasons.seasons);
           var current = getStoredOverride();
-          var newSeasonId = prompt('Set season (options: ' + opts_list.join(', ') + ')', current ? current.seasonId : '');
+          var newSeasonId = prompt(T('promptSeason').replace('{opts}', opts_list.join(', ')), current ? current.seasonId : '');
           if (newSeasonId === null) return;
           if (!newSeasonId.trim()) {
             setStoredOverride(null);
           } else {
-            var wk = prompt('Set week (1-8)', current && current.week ? String(current.week) : '1');
+            var wk = prompt(T('promptWeek'), current && current.week ? String(current.week) : '1');
             setStoredOverride(newSeasonId.trim(), parseInt(wk || '1', 10));
           }
           window.dispatchEvent(new CustomEvent('lws:season-changed'));
@@ -225,6 +265,18 @@
         });
         wrap.appendChild(overrideBtn);
       }
+
+      // Re-render on lang toggles from the host page
+      window.addEventListener('lws:lang-changed', function () {
+        label.textContent = opts.labelText || T('warzoneLabel');
+        input.placeholder = T('warzonePlaceholder');
+        if (opts.showOverrideLink !== false) { /* find button, update */ }
+        // Simpler: replace all children
+        var children = wrap.querySelectorAll('a');
+        children.forEach(function (a) { if (a.textContent === 'change' || a.textContent === '변경') a.textContent = T('change'); });
+        refreshBadge();
+      });
+
       mount.appendChild(wrap);
       return wrap;
     });
