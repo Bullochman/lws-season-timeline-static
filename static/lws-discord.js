@@ -285,6 +285,13 @@
     if (slot) {
       postBtn = renderPostButton(slot, {
         getBlob: function () {
+          // Guard: if the underlying PNG button is disabled, the tool isn't
+          // in a state where it can produce a PNG yet. Tell the user, don't
+          // silently fail.
+          var pngBtnEl = document.getElementById(opts.pngBtnId);
+          if (pngBtnEl && pngBtnEl.disabled) {
+            return Promise.reject(new Error('Fill in the tool inputs and click ' + (pngBtnEl.textContent || 'Export PNG').trim().slice(0, 40) + ' first — then Post to Discord.'));
+          }
           // Hook toBlob, click the PNG button, wait for the callback to fire.
           return new Promise(function (resolve, reject) {
             var origToBlob = HTMLCanvasElement.prototype.toBlob;
@@ -295,7 +302,7 @@
               settled = true;
               HTMLCanvasElement.prototype.toBlob = origToBlob;
               HTMLCanvasElement.prototype.toDataURL = origToDataURL;
-              reject(new Error('PNG generation timed out (5s). Click Export PNG first, then try again.'));
+              reject(new Error('The tool didn\'t produce a PNG. Try clicking the ' + (opts.pngBtnId ? '#' + opts.pngBtnId : 'Export PNG') + ' button first — it may need input data.'));
             }, 5000);
             HTMLCanvasElement.prototype.toBlob = function (cb, type, quality) {
               var self = this;
