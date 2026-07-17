@@ -4,6 +4,39 @@
     { url: 'data/r10t-alliance-99.csv', label: 'R10t Riot (99) — previous', count: 99 }
   ];
 
+  // ---- i18n (mirrors the shared `lws_lang` preference set by sibling tools)
+  function _getLang() {
+    try {
+      var s = localStorage.getItem('lws_lang');
+      if (s === 'ko' || s === 'en') return s;
+    } catch (e) { /* private mode */ }
+    return (navigator.language || 'en').toLowerCase().startsWith('ko') ? 'ko' : 'en';
+  }
+  var _STR = {
+    en: {
+      rosterLabel: 'Roster:',
+      loadBtn: 'Load',
+      loading: 'loading…',
+      membersLoaded: '{n} members loaded',
+      membersFromExtractor: '{n} members loaded from Roster Extractor',
+      loadFailed: 'load failed: ',
+    },
+    ko: {
+      rosterLabel: '명단:',
+      loadBtn: '불러오기',
+      loading: '불러오는 중…',
+      membersLoaded: '{n}명 로드됨',
+      membersFromExtractor: 'Roster Extractor에서 {n}명 로드됨',
+      loadFailed: '불러오기 실패: ',
+    },
+  };
+  function _t(key, vars) {
+    var lang = _getLang();
+    var s = (_STR[lang] && _STR[lang][key]) || _STR.en[key] || key;
+    if (vars) for (var k in vars) s = s.replace('{' + k + '}', vars[k]);
+    return s;
+  }
+
   function parseCsv(text) {
     var lines = text.split(/\r?\n/).filter(function (l) { return l.trim(); });
     if (!lines.length) return [];
@@ -24,7 +57,7 @@
     var wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0';
     var label = document.createElement('label');
-    label.textContent = 'Roster:';
+    label.textContent = _t('rosterLabel');
     label.style.cssText = 'color:var(--fg-muted,#9aa0a6);font-size:13px';
     var sel = document.createElement('select');
     sel.id = 'lws-roster-select';
@@ -38,7 +71,7 @@
     });
     var btn = document.createElement('button');
     btn.type = 'button';
-    btn.textContent = 'Load';
+    btn.textContent = _t('loadBtn');
     btn.style.cssText = 'padding:6px 12px;background:#c9a961;color:#0a0e1a;border:none;border-radius:4px;font-weight:600;cursor:pointer;font-size:13px';
     btn.addEventListener('click', function () { load(sel.value); });
     var status = document.createElement('span');
@@ -53,12 +86,12 @@
 
   function load(url) {
     var status = document.getElementById('lws-roster-status');
-    if (status) status.textContent = 'loading…';
+    if (status) status.textContent = _t('loading');
     return fetch(url)
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
       .then(function (t) {
         var rows = parseCsv(t);
-        if (status) status.textContent = rows.length + ' members loaded';
+        if (status) status.textContent = _t('membersLoaded', { n: rows.length });
         var name = url.split('/').pop().replace('.csv', '');
         if (typeof window.__lwsRosterLoaded === 'function') {
           window.__lwsRosterLoaded(rows, name);
@@ -67,7 +100,7 @@
         return rows;
       })
       .catch(function (e) {
-        if (status) status.textContent = 'load failed: ' + e.message;
+        if (status) status.textContent = _t('loadFailed') + e.message;
       });
   }
 
@@ -94,7 +127,7 @@
       var rows = parseCsv(params.roster);
       var name = params.name || 'Roster Extractor';
       var status = document.getElementById('lws-roster-status');
-      if (status) status.textContent = rows.length + ' members loaded from Roster Extractor';
+      if (status) status.textContent = _t('membersFromExtractor', { n: rows.length });
       if (typeof window.__lwsRosterLoaded === 'function') {
         window.__lwsRosterLoaded(rows, name);
       }
