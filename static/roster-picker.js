@@ -78,9 +78,48 @@
     rosters: ROSTERS
   };
 
+  // Cross-origin carry-through from Roster Extractor: read #roster=<url-encoded-csv>&name=<url-encoded>
+  // from window.location.hash. If present, use it INSTEAD of the default preset roster.
+  function tryLoadFromHash() {
+    try {
+      var h = window.location.hash || '';
+      if (h.indexOf('roster=') === -1) return null;
+      var params = {};
+      h.replace(/^#/, '').split('&').forEach(function (kv) {
+        var eq = kv.indexOf('=');
+        if (eq === -1) return;
+        params[kv.slice(0, eq)] = decodeURIComponent(kv.slice(eq + 1));
+      });
+      if (!params.roster) return null;
+      var rows = parseCsv(params.roster);
+      var name = params.name || 'Roster Extractor';
+      var status = document.getElementById('lws-roster-status');
+      if (status) status.textContent = rows.length + ' members loaded from Roster Extractor';
+      if (typeof window.__lwsRosterLoaded === 'function') {
+        window.__lwsRosterLoaded(rows, name);
+      }
+      window.dispatchEvent(new CustomEvent('lws:roster-loaded', { detail: { rows: rows, name: name, source: 'roster-extractor' } }));
+      // Show a small banner acknowledging the imported roster
+      try {
+        var banner = document.createElement('div');
+        banner.style.cssText = 'padding:10px 14px;margin:8px 0;background:rgba(201,169,97,0.10);border:1px solid rgba(201,169,97,0.35);border-radius:6px;color:#c9a961;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:8px';
+        banner.innerHTML = '<span>✨ Loaded <strong>' + rows.length + '</strong> members from Roster Extractor — ' + name.replace(/</g, '&lt;') + '</span><button type="button" style="background:none;border:1px solid rgba(201,169,97,0.4);color:#c9a961;padding:4px 10px;border-radius:4px;font-size:12px;cursor:pointer">Dismiss</button>';
+        banner.querySelector('button').addEventListener('click', function () { banner.remove(); });
+        var mount = document.getElementById('lws-roster-picker');
+        if (mount) mount.parentNode.insertBefore(banner, mount);
+        else document.body.insertBefore(banner, document.body.firstChild);
+      } catch (e) { /* non-fatal */ }
+      // Clear the hash so a refresh doesn't re-import (avoids stale-data confusion)
+      try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch (e) {}
+      return rows;
+    } catch (e) { return null; }
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var mount = document.getElementById('lws-roster-picker');
     if (mount) render(mount);
+    // Priority order: hash > autoload marker > picker mounted → default roster
+    if (tryLoadFromHash()) return;
     var auto = document.querySelector('[data-lws-roster-autoload]');
     if (auto || document.getElementById('lws-roster-picker')) {
       load(ROSTERS[0].url);
