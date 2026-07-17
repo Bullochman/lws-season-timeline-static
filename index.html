@@ -1418,10 +1418,8 @@
       var rows = ev.detail.rows;
       if (!rows || !rows.length) return;
       var headers = Object.keys(rows[0]);
-      var csv = headers.join(',') + '
-' +
-        rows.map(function (r) { return headers.map(function (h) { return (r[h] || ''); }).join(','); }).join('
-');
+      var csv = headers.join(',') + '\n' +
+        rows.map(function (r) { return headers.map(function (h) { return (r[h] || ''); }).join(',') }).join('\n');
       var input = document.getElementById('rosterFile');
       if (!input) { console.warn('[LWS] roster input not found'); return; }
       var dt = new DataTransfer();

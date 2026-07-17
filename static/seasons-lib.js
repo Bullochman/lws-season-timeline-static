@@ -232,6 +232,7 @@
 
   window.LWSSeasons = {
     resolve: resolveContext,
+    resolveContext: resolveContext,  // backward-compat alias
     loadAll: loadAll,
     getCurrent: getCurrent,
     getNext: getNext,
