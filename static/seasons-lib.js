@@ -184,8 +184,23 @@
       wkAbbr: 'Wk',
       overrideNote: '(override)',
       change: 'change',
-      promptSeason: 'Set season (options: {opts})',
-      promptWeek: 'Set week (1-8)'
+      modalTitle: 'Override warzone season & week',
+      modalSeason: 'Season',
+      modalWeek: 'Week (1-8)',
+      modalHint: 'Auto-detected from your warzone number. Override only if it looks wrong.',
+      modalClear: 'Clear override',
+      modalSave: 'Save',
+      modalCancel: 'Cancel',
+      season_pretty: {
+        'pre-season': 'Pre-season',
+        's1-crimson-plague': 'S1 · The Crimson Plague',
+        's2-polar-storm': 'S2 · Polar Storm',
+        's3-golden-kingdom': 'S3 · Golden Kingdom',
+        's4-evernight-isle': 'S4 · Evernight Isle (upcoming)',
+        's5-wild-west': 'S5 · Wild West (future)',
+        's6-tbd': 'S6 · TBD',
+        'off-season': 'Off-season'
+      }
     },
     ko: {
       warzoneLabel: '워존:',
@@ -193,14 +208,123 @@
       wkAbbr: '주',
       overrideNote: '(수동 설정)',
       change: '변경',
-      promptSeason: '시즌 설정 (선택지: {opts})',
-      promptWeek: '주차 설정 (1-8)'
+      modalTitle: '워존 시즌 및 주차 수동 설정',
+      modalSeason: '시즌',
+      modalWeek: '주차 (1-8)',
+      modalHint: '워존 번호에서 자동 감지된 값입니다. 잘못된 경우에만 변경하세요.',
+      modalClear: '초기화',
+      modalSave: '저장',
+      modalCancel: '취소',
+      season_pretty: {
+        'pre-season': '프리 시즌',
+        's1-crimson-plague': 'S1 · 크림슨 플레이그',
+        's2-polar-storm': 'S2 · 폴라 스톰',
+        's3-golden-kingdom': 'S3 · 골든 킹덤',
+        's4-evernight-isle': 'S4 · 이버나이트 아일 (예정)',
+        's5-wild-west': 'S5 · 와일드 웨스트 (예정)',
+        's6-tbd': 'S6 · 미정',
+        'off-season': '오프시즌'
+      }
     }
   };
   function T(key) {
     var lang = getLang();
     var dict = SELECTOR_STRINGS[lang] || SELECTOR_STRINGS.en;
     return dict[key] || SELECTOR_STRINGS.en[key] || key;
+  }
+
+  // Modal dropdown replacing the old prompt() dialogs (2026-07-19).
+  // Populated from data.warzones.season_id_options, labeled from SELECTOR_STRINGS.season_pretty.
+  function openSeasonModal(seasonIds, current, cb) {
+    var lang = getLang();
+    var dict = SELECTOR_STRINGS[lang] || SELECTOR_STRINGS.en;
+    var prettyLabels = dict.season_pretty || {};
+    var callbackFired = false;
+    function fire(result) { if (callbackFired) return; callbackFired = true; cleanup(); cb(result); }
+
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(4,7,15,0.7);backdrop-filter:blur(6px);z-index:99999;display:flex;align-items:center;justify-content:center;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR",sans-serif';
+
+    var modal = document.createElement('div');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.style.cssText = 'background:#0d1424;border:1px solid rgba(201,169,97,0.35);border-radius:10px;padding:22px 24px;max-width:420px;width:calc(100% - 32px);box-shadow:0 20px 60px rgba(0,0,0,0.6);color:#e6e8ee';
+
+    var title = document.createElement('h3');
+    title.textContent = dict.modalTitle;
+    title.style.cssText = 'margin:0 0 12px;font-size:15px;font-weight:600;color:#c9a961;letter-spacing:0.02em';
+    modal.appendChild(title);
+
+    var hint = document.createElement('p');
+    hint.textContent = dict.modalHint;
+    hint.style.cssText = 'margin:0 0 16px;font-size:12px;color:#7a8290;line-height:1.5';
+    modal.appendChild(hint);
+
+    var seasonLabel = document.createElement('label');
+    seasonLabel.textContent = dict.modalSeason;
+    seasonLabel.style.cssText = 'display:block;font-size:11px;color:#7a8290;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px';
+    modal.appendChild(seasonLabel);
+
+    var seasonSelect = document.createElement('select');
+    seasonSelect.style.cssText = 'width:100%;padding:9px 10px;background:#0a0e1a;color:#e6e8ee;border:1px solid #2a3444;border-radius:6px;font-family:inherit;font-size:13.5px;margin-bottom:14px;cursor:pointer';
+    (seasonIds || []).forEach(function (sid) {
+      var opt = document.createElement('option');
+      opt.value = sid;
+      opt.textContent = prettyLabels[sid] || sid;
+      if (current && current.seasonId === sid) opt.selected = true;
+      seasonSelect.appendChild(opt);
+    });
+    modal.appendChild(seasonSelect);
+
+    var weekLabel = document.createElement('label');
+    weekLabel.textContent = dict.modalWeek;
+    weekLabel.style.cssText = 'display:block;font-size:11px;color:#7a8290;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px';
+    modal.appendChild(weekLabel);
+
+    var weekInput = document.createElement('input');
+    weekInput.type = 'number'; weekInput.min = '1'; weekInput.max = '8';
+    weekInput.value = current && current.week ? String(current.week) : '1';
+    weekInput.style.cssText = 'width:100%;padding:9px 10px;background:#0a0e1a;color:#e6e8ee;border:1px solid #2a3444;border-radius:6px;font-family:inherit;font-size:13.5px;margin-bottom:20px';
+    modal.appendChild(weekInput);
+
+    var actions = document.createElement('div');
+    actions.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap';
+
+    var clearBtn = document.createElement('button');
+    clearBtn.type = 'button';
+    clearBtn.textContent = dict.modalClear;
+    clearBtn.style.cssText = 'padding:8px 14px;background:transparent;color:#7a8290;border:1px solid #2a3444;border-radius:6px;font-family:inherit;font-size:12.5px;cursor:pointer;margin-right:auto';
+    clearBtn.addEventListener('click', function () { fire({ clear: true }); });
+
+    var cancelBtn = document.createElement('button');
+    cancelBtn.type = 'button';
+    cancelBtn.textContent = dict.modalCancel;
+    cancelBtn.style.cssText = 'padding:8px 14px;background:transparent;color:#a8b0c0;border:1px solid #2a3444;border-radius:6px;font-family:inherit;font-size:12.5px;cursor:pointer';
+    cancelBtn.addEventListener('click', function () { fire(null); });
+
+    var saveBtn = document.createElement('button');
+    saveBtn.type = 'button';
+    saveBtn.textContent = dict.modalSave;
+    saveBtn.style.cssText = 'padding:8px 18px;background:#c9a961;color:#0a0e1a;border:1px solid #c9a961;border-radius:6px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer';
+    saveBtn.addEventListener('click', function () {
+      var wk = parseInt(weekInput.value || '1', 10);
+      if (isNaN(wk) || wk < 1) wk = 1;
+      if (wk > 8) wk = 8;
+      fire({ seasonId: seasonSelect.value, week: wk });
+    });
+
+    actions.appendChild(clearBtn);
+    actions.appendChild(cancelBtn);
+    actions.appendChild(saveBtn);
+    modal.appendChild(actions);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    function cleanup() { if (overlay.parentNode) overlay.parentNode.removeChild(overlay); document.removeEventListener('keydown', onKey); }
+    function onKey(e) { if (e.key === 'Escape') fire(null); if (e.key === 'Enter' && e.target !== weekInput) { saveBtn.click(); } }
+    document.addEventListener('keydown', onKey);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) fire(null); });
+    setTimeout(function () { seasonSelect.focus(); }, 20);
   }
 
   function renderWarzoneSelector(mount, opts) {
@@ -252,16 +376,16 @@
           e.preventDefault();
           var opts_list = data.warzones.season_id_options || Object.keys(data.seasons.seasons);
           var current = getStoredOverride();
-          var newSeasonId = prompt(T('promptSeason').replace('{opts}', opts_list.join(', ')), current ? current.seasonId : '');
-          if (newSeasonId === null) return;
-          if (!newSeasonId.trim()) {
-            setStoredOverride(null);
-          } else {
-            var wk = prompt(T('promptWeek'), current && current.week ? String(current.week) : '1');
-            setStoredOverride(newSeasonId.trim(), parseInt(wk || '1', 10));
-          }
-          window.dispatchEvent(new CustomEvent('lws:season-changed'));
-          refreshBadge();
+          openSeasonModal(opts_list, current, function (result) {
+            if (!result) return; // cancel
+            if (result.clear) {
+              setStoredOverride(null);
+            } else {
+              setStoredOverride(result.seasonId, result.week);
+            }
+            window.dispatchEvent(new CustomEvent('lws:season-changed'));
+            refreshBadge();
+          });
         });
         wrap.appendChild(overrideBtn);
       }
