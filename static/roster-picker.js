@@ -1,7 +1,7 @@
 (function () {
   var ROSTERS = [
-    { url: 'data/tino-alliance-94.csv', label: 'RONY / TINO 티노 (94) — current', count: 94, isDefault: true },
-    { url: 'data/r10t-alliance-99.csv', label: 'R10t Riot (99) — previous', count: 99 }
+    { url: 'data/moonpetal-circle-94.csv', label: 'The Moonpetal Circle (94) — demo', count: 94, isDefault: true },
+    { url: 'data/silverwing-coven-99.csv', label: 'Silverwing Coven (99) — demo', count: 99 }
   ];
 
   // ---- i18n (mirrors the shared `lws_lang` preference set by sibling tools)
